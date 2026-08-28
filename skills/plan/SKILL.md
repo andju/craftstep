@@ -12,7 +12,7 @@ before anything else): $ARGUMENTS
 
 ## Step 0 — Load this project's conventions
 
-Six facts drive this skill. Resolve each one independently, taking the first source that
+The facts below drive this skill. Resolve each one independently, taking the first source that
 settles it:
 
 1. **The project's CLAUDE.md.** Usually already in context; read it from disk if it
