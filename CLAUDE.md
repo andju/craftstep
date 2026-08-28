@@ -15,8 +15,8 @@ file, not per folder:
 | Path | Status |
 | --- | --- |
 | [skills/plan/](skills/plan/) | **Shipped.** The reference implementation; a new skill copies its shape. |
-| [skills/implement-feature/](skills/implement-feature/) | POC — the implementation half, not yet ported. |
-| [agents/spec-step.md](agents/spec-step.md) | POC — single-step executor `implement-feature` would delegate to. |
+| [skills/implement/](skills/implement/) | **Shipped.** Implements the spec `plan` writes, work item by work item. |
+| [agents/spec-step.md](agents/spec-step.md) | POC — single-step executor `implement` would delegate to. |
 | [skills/review-to-prompts/](skills/review-to-prompts/) | POC — review step. |
 | [skills/solution-design/](skills/solution-design/) | POC — design step. |
 

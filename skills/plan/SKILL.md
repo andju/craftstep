@@ -102,8 +102,10 @@ Use these headings:
   alternatives, write that instead of inventing some.
 - **Work items** — numbered and ordered. Each one small enough to finish and verify
   alone, and self-contained: the files it touches, what it must not touch, its finish
-  condition, and the exact command that proves it. These are the resumption points when
-  a session dies mid-implementation.
+  condition, and the exact command that proves it. Only write something new when
+  nothing existing fits; Where an item builds on an existing unit from the
+  `reuse` directories, it names that unit and the extension it needs — a prop,
+  a variant, a parameter, an interface change.
 - **Acceptance criteria** — checkable statements of done, in terms of behaviour rather
   than implementation. Include what must *not* change.
 - **Tests** — which tests and which tier each belongs to, justified against the boundary
@@ -113,10 +115,9 @@ Use these headings:
 - **Docs** — which user-facing file(s) change, or whether a new page is needed and where
   it links from. If the change is internal-only or there is no user-facing documentation,
   say so explicitly.
-- **Reuse** — existing units from the `reuse` directories the feature could build on.
-  For each candidate, what it would need to support the new case — a prop, a variant, a
-  parameter, an interface change. Only propose something new when nothing fits, and say
-  what didn't.
+- **Reuse** — the units from the `reuse` directories you checked and did *not* build
+  on, and what didn't fit about each. If everything you checked fits, say that instead
+  of leaving the section empty.
 - **Extra checks** — an explicit answer to every item in the `extra_checks` section.
   If the section is absent, say so exlicitly.
 - **When this plan is wrong** — name the specific places you're least confident the
