@@ -16,8 +16,9 @@ file, not per folder:
 | --- | --- |
 | [skills/plan/](skills/plan/) | **Shipped.** The reference implementation; a new skill copies its shape. |
 | [skills/implement/](skills/implement/) | **Shipped.** Implements the spec `plan` writes, work item by work item. |
+| [skills/review-code/](skills/review-code/) | **Shipped.** Reviews a named scope and writes one self-contained fix prompt per finding. |
 | [agents/spec-step.md](agents/spec-step.md) | POC — single-step executor `implement` would delegate to. |
-| [skills/review-to-prompts/](skills/review-to-prompts/) | POC — review step. |
+| [skills/review-to-prompts/](skills/review-to-prompts/) | POC — review step, superseded by `review-code`. |
 | [skills/solution-design/](skills/solution-design/) | POC — design step. |
 
 The POC entries are reference only and go away short- to mid-term. Don't extend
@@ -33,8 +34,9 @@ never keeps its own config file — these three are all of them:
    a skill reads it from disk only when it isn't — inside a subagent, or a
    non-root package in a monorepo.
 2. **`.claude/project.md`** in the consuming repo, under a fixed section
-   schema: `plans`, `commands`, `tests`, `docs`, `reuse`, `extra_checks`. A
-   missing file, a missing section, and a missing key are all normal.
+   schema: `plans`, `reviews`, `commands`, `tests`, `docs`, `reuse`,
+   `extra_checks`. A missing file, a missing section, and a missing key are
+   all normal.
 3. **Inference from the repo itself** — package manifest, CI config, existing
    test and docs layout — when neither source above settles the fact.
 

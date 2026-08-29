@@ -39,6 +39,13 @@ back to inferring from the repo and say which facts were inferred:
 <!-- Or `docs/specs/<feature-slug>.md` if you keep specs per-feature rather than
      overwriting a single scratch file. -->
 
+## reviews
+
+`docs/code-review/`
+
+<!-- The folder code review findings are written to, one file per finding.
+     Defaults to `docs/code-review/` when unset. -->
+
 ## commands
 
 ```bash
@@ -52,11 +59,17 @@ npm run build    # build
 - `tests/unit` — pure logic, no I/O, no framework mounting
 - `tests/integration` — crosses a real boundary (db, filesystem, HTTP client)
 - `tests/e2e` — drives the app through the browser; expensive, keep the count low
+- Named `*.test.ts`, wherever they sit — unit tests are co-located beside the code they cover
+
+<!-- Two halves: the tiers, and how test files are named. The latter is important
+     to identify co-locates tests. Information is maintained to avoid expensive
+     discovery. -->
 
 ## docs
 
-`docs/user/` — user-facing. `docs/internal/` is not user-facing; changes there don't
-count as documentation for this checklist.
+- `docs/user/` — user-facing.
+- `docs/internal/` is not user-facing; changes there don't count as
+  documentation for this checklist.
 
 <!-- Set to `none` for projects with no user-facing docs. -->
 
