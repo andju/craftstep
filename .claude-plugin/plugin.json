@@ -1,5 +1,5 @@
 {
   "name": "craftstep",
-  "description": "Skills for individual steps of the software development lifecycle - spec writing, implementation and code review - each invoked when you hit that step.",
+  "description": "Skills for individual steps of the software development lifecycle - spec writing, implementation and review - each invoked when you hit that step.",
   "version": "0.1.0"
 }

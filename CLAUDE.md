@@ -17,6 +17,7 @@ file, not per folder:
 | [skills/plan/](skills/plan/) | **Shipped.** The reference implementation; a new skill copies its shape. |
 | [skills/implement/](skills/implement/) | **Shipped.** Implements the spec `plan` writes, work item by work item. |
 | [skills/review-code/](skills/review-code/) | **Shipped.** Reviews a named scope and writes one self-contained fix prompt per finding. |
+| [skills/review-tests/](skills/review-tests/) | **Shipped.** The test-side counterpart of `review-code`: audits the suite for a named scope and writes one fix prompt per finding into the same folder. |
 | [agents/spec-step.md](agents/spec-step.md) | POC — single-step executor `implement` would delegate to. |
 | [skills/review-to-prompts/](skills/review-to-prompts/) | POC — review step, superseded by `review-code`. |
 | [skills/solution-design/](skills/solution-design/) | POC — design step. |

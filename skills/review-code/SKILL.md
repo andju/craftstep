@@ -13,8 +13,9 @@ $ARGUMENTS
 Every finding lands on disk as its own file, written for a fresh session that has no memory of
 this review and will be handed **one such file, or the whole folder, and nothing else**.
 
-**Never edit source, never fix what you find, never commit.** Write only inside the review folder.
-A fact this run turns up that's worth recording is proposed at the end for me to apply.
+**Never write or edit project files, never fix what you find, never commit.** Write only inside
+the review folder. A fact this run turns up that's worth recording is proposed at the end for me
+to apply.
 
 ## Step 0 — Load this project's conventions
 

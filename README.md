@@ -1,5 +1,5 @@
 # craftstep
-Reusable Claude Code skills for individual steps of the software development lifecycle - spec writing, implementation and code review - each one on-demand expertise you invoke when you hit that step, not a one-size-fits-all agent.
+Reusable Claude Code skills for individual steps of the software development lifecycle - spec writing, implementation and review - each one on-demand expertise you invoke when you hit that step, not a one-size-fits-all agent.
 
 ## Project facts
 
@@ -43,7 +43,8 @@ back to inferring from the repo and say which facts were inferred:
 
 `docs/code-review/`
 
-<!-- The folder code review findings are written to, one file per finding.
+<!-- The folder review findings are written to, one file per finding. Code and
+     test review share it, prefixed `code-` and `test-` respectively.
      Defaults to `docs/code-review/` when unset. -->
 
 ## commands
@@ -78,6 +79,9 @@ npm run build    # build
 - `src/lib/components/` — shared UI components
 - `src/lib/hooks/` — shared stateful logic
 - `src/lib/api/` — service clients; never call fetch directly from a component
+- `tests/fixtures/` — shared fixtures and factories; new test setup builds on these
+
+<!-- Shared test fixtures, factories and helpers belong here too. -->
 
 ## extra_checks
 
