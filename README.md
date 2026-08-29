@@ -87,6 +87,22 @@ npm run build    # build
 - Does this change a public API surface? If so, note the version impact.
 ````
 
+## Related frameworks
+craftstep is one of several attempts to bring discipline to AI-assisted development, but it's deliberately narrower than most: it supplies expertise for individual steps you invoke, not a methodology that runs your process for you.
+
+[Superpowers](https://github.com/obra/superpowers)' skills fire automatically the moment the agent notices you're building something, and they carry a specific methodology with them: a design doc gets approved before any plan exists, and implementation is strict TDD (red-green-refactor; code written before its test gets deleted).
+
+> craftstep never triggers itself and isn't bound to a methodology: It only acts on the one step you called it for, and doesn't require a design doc or test-first discipline to use it.
+
+
+[GSD Core](https://github.com/open-gsd/gsd-core) is a methodology with its own execution model: a phase loop it drives across sessions, coordinating work over parallel subagents and carrying project state forward itself.
+
+> craftstep skills own no loop and no state: Each does its one step and hands control straight back — there's nothing for it to resume or carry between invocations, because it isn't running your process, you are.
+
+[gstack](https://github.com/garrytan/gstack) models an entire organization around that lifecycle — CEO, engineering manager, designer, security officer, release engineer — each a command with its own gate.
+
+> craftstep's step list is bounded by the Software Development Life Cycle itself: writing a spec, implementing it, reviewing the result. It doesn't stand in for roles, only for the steps a solo engineer already owns.
+
 ## Compatibility
 
 Skills in this repo use the `argument-hint` frontmatter field to document
