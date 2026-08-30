@@ -1,21 +1,20 @@
 ---
 name: review-tests
 description: Audit the tests for a scope I name and write one self-contained fix prompt per finding into the review folder. Never writes or repairs a test itself.
-argument-hint: [what to review — e.g. "the whole suite", "tests/api", "the auth flow", "since main"; blank asks]
+argument-hint: [what to review — e.g. the whole suite, tests/api, the auth flow, since main; blank asks]
 allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(mkdir:*), Write, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
 ---
 
-We are reviewing tests. Scope for this run (blank → step 1 settles it with me):
-$ARGUMENTS
+We are reviewing tests. Scope for this run (blank → step 1 settles it with me): $ARGUMENTS
 
 Every finding lands on disk as its own file, written for a fresh session that has no memory of
 this review and will be handed **one such file, or the whole folder, and nothing else**.
 
-**Never write or edit project files, never fix what you find, never run the suite, never commit.**
-Write only inside the review folder. A fact this run turns up that's worth recording is proposed
-at the end for me to apply.
+**This skill only writes inside `review` folder.** It never touches other files,
+`.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording,
+propose it once you are done and let me apply it.
 
 ## Step 0 — Load this project's conventions
 
