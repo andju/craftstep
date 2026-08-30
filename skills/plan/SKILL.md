@@ -10,6 +10,10 @@ user-invocable: true
 We are planning a new feature (if that's empty, ask what we're building
 before anything else): $ARGUMENTS
 
+**This skill only writes the spec at `plans`.** It never touches other files,
+`.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording,
+propose it once you are done and let me apply it.
+
 ## Step 0 — Load this project's conventions
 
 The facts below drive this skill. Resolve each one independently, taking the first source that
@@ -23,8 +27,7 @@ settles it:
 
 What each fact is, and how to infer it at source 3:
 
-- **plans** — where the spec gets written. Infer from an existing plans or specs
-  convention; default to `SPEC.md` at the repo root.
+- **plans** — the file the spec gets written to. Default to `SPEC.md` at the repo root.
 - **tests** — the tiers that exist here and what belongs in each. Infer by globbing for
   test locations and per-language test file patterns, reading one or two existing tests
   from each tier, and checking the CI config for how they're run.
@@ -39,18 +42,42 @@ What each fact is, and how to infer it at source 3:
 
 List every fact you inferred rather than read, in one short block, before continuing.
 
-**Never edit `.claude/project.md` or CLAUDE.md while this skill runs.** If the skill turns
-up a fact worth recording, propose the addition after the spec is written and let me apply it.
+## Step 1 — Settle what is already decided, then the scope
 
-## Step 1 — Interview me
+**If I ask you to plan from a decision record or design:** Read the path I named in $ARGUMENTS,
+or a document I pasted or attached in full before anything else. Never go looking for one. A
+record I did point you at has already settled things this skill would otherwise interview for:
 
-**If a spec for this feature already exists** at the `plans` path, this is a revision
-pass: read it in full first, including any annotations or edits I made directly in the
-file. You'll rewrite it incorporating them, so ask only about what those changes left
-ambiguous. Don't re-interview on settled points — a revision pass is often one round,
-sometimes none. Carry its **Rejected alternatives** forward into the rewrite — drop an
-entry only if the revision explicitly revives that option, and then say so under
-**Approach**.
+- Its decision **is** the Approach. Step 3 pushes back on how that decision meets this
+  codebase, never on the decision itself. If you think the decision is wrong, say so once
+  and stop.
+- Its discarded options are **Rejected alternatives**. Carry each across with the reason it
+  was recorded under; add to that list rather than re-arguing it.
+- Interview strictly below its altitude: Anything the record settles is not a question.
+- Its risks describe operating the decision, not places the codebase might contradict this
+  spec. They don't belong in **When this plan is wrong**.
+
+**Settle the size.** Whatever you're working from can cover more than one feature. If what
+you're holding needs more than one spec, say so now: propose the split as an ordered list
+of slices, name the one this run specs, and record the rest under **Feature** as what this spec
+deliberately excludes. Interview about that slice only.
+
+**Once you know which feature this run specs, check the `plans` path.** The spec is a working
+document holding one feature at a time, so anything already there is either an earlier pass at
+this feature or a leftover from a finished one. Read its **Feature** section and say which:
+
+- **The same feature — a revision pass.** Read it in full first, including any annotations or
+  edits I made directly in the file. You'll rewrite it incorporating them, so ask only about
+  what those changes left ambiguous, and don't re-interview on settled points. Carry its
+  **Rejected alternatives** forward into the rewrite — drop an entry only if the revision
+  explicitly revives that option, and then say so under **Approach**.
+- **A different feature.** Name the feature it holds and confirm with me before overwriting
+  it.
+
+This step still ends by naming the scope: say in one line what this run specs, and what it
+leaves out.
+
+## Step 2 — Interview me
 
 Cover requirements, edge cases, and tradeoffs. Ask open questions as plain text; use
 AskUserQuestion for genuine either/ors. Don't ask me to confirm what I've already told
@@ -62,7 +89,7 @@ single AskUserQuestion call — it takes up to four — with any open questions 
 alongside them. Batch what stands alone; hold back a question whose right form depends on
 an answer you don't have yet.
 
-Stop when you could write the step 3 work items — each one's files, finish condition, and
+Stop when you could write the step 4 work items — each one's files, finish condition, and
 verify command — without guessing. Track the options you raise and I reject, and why.
 
 Two or three rounds settle a normal feature. That count is a diagnostic, not a budget —
@@ -73,33 +100,35 @@ round is starting, something structural is off. Name which before you continue:
 - You're asking around an unsettled decision upstream of the questions. Name it and settle
   only that.
 - You're asking things the repo answers. Go read it instead — see the grounding rule above.
-- The answers stopped changing any work item. Stop and go to step 2.
+- The answers stopped changing any work item. Stop and go to step 3.
 
 Unsettled requirements always send you back for another round; they never become a caveat
 in the spec.
 
-## Step 2 — Push back
+## Step 3 — Push back
 
 If any part is impossible or conflicts with how the system works today, say so. If
 there's a better route to the same goal, propose it with the tradeoff. Settle this with
 me before writing anything.
 
-## Step 3 — Write the spec
+## Step 4 — Write the spec
 
 The implementer will only have the repo and this spec.
 
 So the spec contains no questions, no TODOs, no "decide during implementation," and no
 alternatives left side by side for the implementer to choose between. If something is
-still undecided when you reach this step, go back to step 1 and settle it.
+still undecided when you reach this step, go back to step 2 and settle it.
 
 Use these headings:
 
 - **Feature** — what we're building and the requirements, in enough detail that someone
-  who wasn't in the interview can tell whether the result is right.
-- **Approach** — the chosen implementation route.
+  who wasn't in the interview can tell whether the result is right. If step 1 split a
+  larger scope, name the slices this spec deliberately excludes.
+- **Approach** — the chosen implementation route. Where a decision record settled it, cite
+  the record and cover only what the record left to this level.
 - **Rejected alternatives** — each option raised and dropped, with the reason, including
-  any carried forward from an earlier revision. If the interview produced no real
-  alternatives, write that instead of inventing some.
+  any carried forward from an earlier revision or from a decision record. If the interview
+  produced no real alternatives, write that instead of inventing some.
 - **Work items** — numbered and ordered. Each one small enough to finish and verify
   alone, and self-contained: the files it touches, what it must not touch, its finish
   condition, and the exact command that proves it. Only write something new when
@@ -127,5 +156,5 @@ Use these headings:
 
 ## Where this skill stops
 
-This skill writes exactly one file: the spec. It does not implement the feature. Summarize
-the spec here and wait for my review.
+This skill writes exactly one file: the spec, at the `plans` path. It does not implement the
+feature. Summarize the spec here and wait for my review.

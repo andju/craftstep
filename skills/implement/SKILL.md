@@ -1,7 +1,7 @@
 ---
 name: implement
 description: Implement an agreed spec — one work item at a time, verifying each, stopping when the codebase contradicts the plan.
-argument-hint: [optional — which work items, or which spec; blank implements all of it]
+argument-hint: [optional — which work items; blank implements all of it]
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
@@ -14,9 +14,9 @@ We are implementing a spec that `/craftstep:plan` wrote and I reviewed. Scope fo
 me. Never improvise around it, re-scope an item to dodge it, or duplicate code to route
 around it.
 
-**Never edit `.claude/project.md` or CLAUDE.md while this skill runs.** If the run turned up
-a fact worth recording — a test tier you had to infer, a command the spec guessed at —
-propose it as a `.claude/project.md` addition at the end for me to apply.
+**This skill only writes the project files the spec calls.** It never touches
+`.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording, propose it
+once you are done and let me apply it.
 
 ## Step 0 — Load this project's conventions
 
@@ -31,8 +31,7 @@ that settles it:
 
 What each fact does here, and how to infer it at source 3:
 
-- **plans** — where the spec lives. Infer from an existing plans or specs convention;
-  default to `SPEC.md` at the repo root.
+- **plans** — the file the spec lives in. Default to `SPEC.md` at the repo root.
 - **commands** — each test tier plus the project's own gate: lint, types, build. The spec
   names a verify command per work item; this fact is the fallback when it doesn't, and what
   you run at the end. Infer from the package manifest's scripts and the CI config.
@@ -47,25 +46,14 @@ List every fact you inferred rather than read, in one short block, before contin
 
 ## Step 1 — Find the spec and read all of it
 
-The `plans` fact gives either a fixed path (`SPEC.md`) or a per-feature pattern
-(`docs/specs/<feature-slug>.md`). For a pattern, glob it: $ARGUMENTS may name the spec; if it
-doesn't and more than one candidate exists, ask with AskUserQuestion rather than taking the
-most recently modified. If there's no spec at that path, stop and say so. Don't write one
-yourself, and don't implement from my request alone.
+If nothing is in the `plans` path, stop and say so. Don't write one yourself, and don't
+implement from my request alone.
 
 Read the spec in full before touching anything, including the sections that read as context:
 **Rejected alternatives** and **Reuse** are routes already turned down — don't re-litigate
 them; **When this plan is wrong** is what step 2 checks.
 
-Then confirm two things, stopping and asking on either:
-
-- **The spec is about this feature.** Under a single-file `plans` convention it may be left
-  over from a different one — check its **Feature** section.
-- **$ARGUMENTS is covered by it.** Don't improvise work the spec doesn't contain.
-
-A spec that doesn't use the `/craftstep:plan` headings still works if it has an ordered list
-of work items — use what it has, and say which sections are missing. With no ordered work
-items at all, stop: there is nothing to sequence or verify against.
+Confirm that **$ARGUMENTS is covered by it.** Don't improvise work the spec doesn't contain.
 
 ## Step 2 — Check the plan against the code before changing any of it
 

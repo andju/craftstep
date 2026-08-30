@@ -1,5 +1,7 @@
 # craftstep
-Reusable Claude Code skills for individual steps of the software development lifecycle - spec writing, implementation and review - each one on-demand expertise you invoke when you hit that step, not a one-size-fits-all agent.
+Reusable Claude Code skills for individual steps of the software development
+lifecycle - planning, implementation and review - each one on-demand expertise
+you invoke when you hit that step, not a one-size-fits-all agent.
 
 ## Project facts
 
@@ -36,8 +38,15 @@ back to inferring from the repo and say which facts were inferred:
 
 `SPEC.md`
 
-<!-- Or `docs/specs/<feature-slug>.md` if you keep specs per-feature rather than
-     overwriting a single scratch file. -->
+<!-- A single file: skills work one spec at a time.
+     Defaults to `SPEC.md` at the repo root when unset. -->
+
+## decisions
+
+`docs/architecture/decisions/`
+
+<!-- Where design and decision records live.
+     Defaults to `docs/architecture/decisions/` when unset. -->
 
 ## reviews
 
@@ -105,7 +114,7 @@ craftstep is one of several attempts to bring discipline to AI-assisted developm
 
 [gstack](https://github.com/garrytan/gstack) models an entire organization around that lifecycle — CEO, engineering manager, designer, security officer, release engineer — each a command with its own gate.
 
-> craftstep's step list is bounded by the Software Development Life Cycle itself: writing a spec, implementing it, reviewing the result. It doesn't stand in for roles, only for the steps a solo engineer already owns.
+> craftstep's step list is bounded by the Software Development Life Cycle itself: designing a solution, writing a spec, implementing it, reviewing the result. It doesn't stand in for roles, only for the steps a solo engineer already owns.
 
 ## Compatibility
 
