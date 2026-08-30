@@ -3,6 +3,136 @@ Reusable Claude Code skills for individual steps of the software development
 lifecycle - planning, implementation and review - each one on-demand expertise
 you invoke when you hit that step, not a one-size-fits-all agent.
 
+The plugin is inteded for small- to medium size projects maintained by
+single-developers or small teams. For more complex setups, an 
+[alternative framework](#alternative-frameworks) might work better.
+
+## How it works
+
+The skills are invoked, never triggered, so how much process a change gets is
+your call.
+
+### Small change
+
+A typo, a copy tweak, a one-line guard, a rename, a version bump: the *what*
+and the *how* are both already settled and the only work left is the typing:
+Prompt directly.
+
+### Feature
+
+The everyday tier: the approach is obvious, but the scope isn't. Big enough
+that you want to agree on what's being built before it's built, and want a
+second pass over the result.
+
+Optionally, start by cutting a feature branch. Nothing in craftstep requires
+one, but the spec and the review findings are files that land in your working
+tree, and a branch keeps them — along with the half-finished code — off `main`
+until you're happy with all three.
+
+#### Plan
+
+Describe what you want to implement to `/craftstep:plan`:
+
+```
+/craftstep:plan Add user authentication with OAuth
+```
+
+It interviews you to clarify open points and writes an implementation-ready
+spec. This is the cheapest point at which to change your mind: a wrong assumption
+caught in the spec costs a sentence, the same one caught later costs a rewrite.
+
+**Recommended model: Opus (xhigh).** The spec is executed literally by the next step,
+so it has to be right about the codebase and complete enough that nothing is
+left to decide later — and the interview has to push back where the plan won't
+work. Those two degrade before anything else does on a smaller model, and a
+spec that hedges still reads fine.
+
+Review the spec, add comments if needed
+(e.g., `<!-- Revisit if this statement is correct. -->`) and ask Claude Code to
+review your comments. If you are using Visual Studio Code, I reccomend the extension
+[Markdown Pro](https://marketplace.visualstudio.com/items?itemName=AmartyaKhan.markdown-pro-commenter)
+to add your comments.
+
+The spec is a working document — keep it on the feature branch, or gitignore
+it. What happens to the file, once the feature is implemented, is your call:
+leave it, delete it, or move it to an archive folder. No skill here cleans it
+up.
+
+#### Implement
+
+Open a new Claude Code Session to get a fresh context window and start the
+implementation:
+
+```
+/craftstep:implement
+```
+
+It will implement the spec, working one item at a time and verify each before
+starting the next. Where the codebase contradicts the spec it stops and asks.
+
+**Recommended model: Opus (high–xhigh)** — Fast mode if the run is long. This is where the
+tokens go, so it's the tempting step to downgrade, and the only one where
+that's defensible: every work item carries its own verify command and the run
+ends on the full gate. Sonnet is a fair trade when the work items are
+mechanical and the test suite behind those commands is real. What you give up
+is the stopping rule — routing around an obstacle instead of reporting it is
+the first thing to go.
+
+#### Validate and fix
+
+With the code written, it is time to validate it. craftstep provides two
+different commands for code and tests:
+
+```
+/craftstep:review-code uncommitted changes
+/craftstep:review-tests
+```
+
+For each finding a self-contained fix prompt is written into the `reviews`
+folder (prefixed `code-` and `test-`). You can reference each file in a
+prompt and ask to fix it.
+
+**Recommended model: Opus (code: xhigh, tests: xhigh–max).** A missed finding leaves no trace — you can't tell
+a thorough review from a shallow one by reading the folder it produced — and
+each run reads its file set once, applying every lens as it goes.
+`review-tests` spends half its pass on the tests that *aren't* there, which
+needs a model of the covered code rather than a scan of the suite. Neither
+review is expensive: a bounded set of files in, short documents out.
+
+The two reviews are independent; run either, both, or neither. Skipping
+`review-tests` on a change with no test surface is normal.
+
+### Complex feature — design the solution first
+
+The *approach* is unsettled, not just the scope. The signals: more than one
+plausible architecture, a choice that's expensive to reverse (a schema, a
+public API, a dependency you'll live with), or a decision someone will ask you
+to justify a year from now.
+
+```
+/craftstep:design-solution Migrate to a microservices architecture
+```
+
+It interviews you, agrees the criteria *before* weighing anything, puts
+genuinely different options against them, and recommends one — writing a
+decision record under `decisions`. Run `craftstep:plan` (in a separate session)
+next, and use the record as input. From there the feature tier runs unchanged.
+
+**Recommended model: Opus, or Fable 5 for a one-way door (xhigh).** Nothing downstream
+checks a decision record: a weak one doesn't fail a test, it quietly misdirects
+every spec written after it. The step also asks for self-restraint — hold four
+genuinely different options at their strongest, and recommend none of them
+before the criteria are agreed — which is what a smaller model drops first,
+leaving one idea at three sizes. It costs an interview and one document, so
+there is little to save here and a lot to lose; where the choice is expensive
+to reverse, Fable 5's extra reasoning is worth the price on that few thousand
+tokens.
+
+Reaching for it on a change that has one obvious implementation wastes an
+interview to rediscover that; the cost of skipping it when you shouldn't have
+is a design decision made implicitly, inside a spec, with no record of what
+lost.
+
 ## Project facts
 
 Skills need a handful of repo-specific facts that they would otherwise have
@@ -100,8 +230,12 @@ npm run build    # build
 - Does this change a public API surface? If so, note the version impact.
 ````
 
-## Related frameworks
+## Alternative frameworks
 craftstep is one of several attempts to bring discipline to AI-assisted development, but it's deliberately narrower than most: it supplies expertise for individual steps you invoke, not a methodology that runs your process for you.
+
+[feature-dev](https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev), Anthropic's own plugin, is the closest neighbour: the same lifecycle, no methodology attached. It is one command, though — `/feature-dev` runs discovery, codebase exploration, architecture, implementation and review as seven phases of a single session, fanning out to explorer, architect and reviewer subagents, and holding the plan and the findings in that session's context.
+
+> craftstep splits the same lifecycle into skills you invoke one at a time, and each writes its output to disk: a decision record, a spec you read before anything is implemented, one file per review finding. Nothing has to survive in a context window, and the reviewer never remembers writing the code.
 
 [Superpowers](https://github.com/obra/superpowers)' skills fire automatically the moment the agent notices you're building something, and they carry a specific methodology with them: a design doc gets approved before any plan exists, and implementation is strict TDD (red-green-refactor; code written before its test gets deleted).
 
