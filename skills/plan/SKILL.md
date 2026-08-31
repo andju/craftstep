@@ -134,7 +134,8 @@ Use these headings:
   condition, and the exact command that proves it. Only write something new when
   nothing existing fits; Where an item builds on an existing unit from the
   `reuse` directories, it names that unit and the extension it needs — a prop,
-  a variant, a parameter, an interface change.
+  a variant, a parameter, an interface change. Work item titles are written as an
+  unchecked checkbox: `1. [ ] <what the item does>`
 - **Acceptance criteria** — checkable statements of done, in terms of behaviour rather
   than implementation. Include what must *not* change.
 - **Tests** — which tests and which tier each belongs to, justified against the boundary
@@ -147,8 +148,11 @@ Use these headings:
 - **Reuse** — the units from the `reuse` directories you checked and did *not* build
   on, and what didn't fit about each. If everything you checked fits, say that instead
   of leaving the section empty.
-- **Extra checks** — an explicit answer to every item in the `extra_checks` section.
-  If the section is absent, say so exlicitly.
+- **Extra checks** — every item in the `extra_checks` section, restated as the question
+  it asks, each with its own explicit answer. The implementer re-confirms these answers
+  against the code it writes and is handed no other copy of the questions, so an answer
+  with the question dropped leaves it nothing to check. If the section is absent, say so
+  explicitly.
 - **When this plan is wrong** — name the specific places you're least confident the
   codebase matches the plan, then state the rule: if reality contradicts this spec, stop
   and report the contradiction rather than improvising around it. Only take uncertainty

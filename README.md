@@ -1,10 +1,10 @@
 # craftstep
 Reusable Claude Code skills for individual steps of the software development
-lifecycle - planning, implementation and review - each one on-demand expertise
+lifecycle - design, implementation and review - each one on-demand expertise
 you invoke when you hit that step, not a one-size-fits-all agent.
 
-The plugin is inteded for small- to medium size projects maintained by
-single-developers or small teams. For more complex setups, an 
+The plugin is intended for small to medium-sized projects maintained by single
+developers or small teams. For more complex setups, an
 [alternative framework](#alternative-frameworks) might work better.
 
 ## How it works
@@ -49,7 +49,7 @@ spec that hedges still reads fine.
 
 Review the spec, add comments if needed
 (e.g., `<!-- Revisit if this statement is correct. -->`) and ask Claude Code to
-review your comments. If you are using Visual Studio Code, I reccomend the extension
+review your comments. If you are using Visual Studio Code, I recommend the extension
 [Markdown Pro](https://marketplace.visualstudio.com/items?itemName=AmartyaKhan.markdown-pro-commenter)
 to add your comments.
 
@@ -70,13 +70,21 @@ implementation:
 It will implement the spec, working one item at a time and verify each before
 starting the next. Where the codebase contradicts the spec it stops and asks.
 
-**Recommended model: Opus (high–xhigh)** — Fast mode if the run is long. This is where the
-tokens go, so it's the tempting step to downgrade, and the only one where
-that's defensible: every work item carries its own verify command and the run
-ends on the full gate. Sonnet is a fair trade when the work items are
-mechanical and the test suite behind those commands is real. What you give up
-is the stopping rule — routing around an obstacle instead of reporting it is
-the first thing to go.
+**Recommended model: Opus (high–xhigh)** — Fast mode if the run is long. The step splits
+itself across two models: `/craftstep:implement` runs on Opus and delegates the
+work items to a Sonnet subagent. Opus resolves the project facts once, clears
+the spec for dispatch and hands down only what the spec itself can't state —
+the subagent reads the rest from the spec — then runs the full gate itself,
+proves every acceptance criterion,
+and owns the fix loop — at most two rounds, each one re-run and re-checked
+rather than taken on the subagent's word. Sonnet does the editing.
+
+What the split buys is cost: implementation is the token-heaviest step of the
+lifecycle, and Sonnet is roughly 60% cheaper on it. What it costs is proximity.
+Opus judges the result from the working tree and from re-running the commands
+itself, not from having watched the work happen — so a subagent that routed
+around an obstacle instead of reporting it gets caught by the gate and the
+acceptance criteria, or not at all.
 
 #### Validate and fix
 
@@ -120,7 +128,7 @@ next, and use the record as input. From there the feature tier runs unchanged.
 
 **Recommended model: Opus, or Fable 5 for a one-way door (xhigh).** Nothing downstream
 checks a decision record: a weak one doesn't fail a test, it quietly misdirects
-every spec written after it. The step also asks for self-restraint — hold four
+every spec written after it. The step also asks for self-restraint — hold three or four
 genuinely different options at their strongest, and recommend none of them
 before the criteria are agreed — which is what a smaller model drops first,
 leaving one idea at three sizes. It costs an interview and one document, so
@@ -235,7 +243,7 @@ craftstep is one of several attempts to bring discipline to AI-assisted developm
 
 [feature-dev](https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev), Anthropic's own plugin, is the closest neighbour: the same lifecycle, no methodology attached. It is one command, though — `/feature-dev` runs discovery, codebase exploration, architecture, implementation and review as seven phases of a single session, fanning out to explorer, architect and reviewer subagents, and holding the plan and the findings in that session's context.
 
-> craftstep splits the same lifecycle into skills you invoke one at a time, and each writes its output to disk: a decision record, a spec you read before anything is implemented, one file per review finding. Nothing has to survive in a context window, and the reviewer never remembers writing the code.
+> craftstep splits the same lifecycle into skills you invoke one at a time, and each writes its output to disk: a decision record, a spec you read before anything is implemented, one file per review finding. Nothing has to survive between steps in a context window, and the reviewer never remembers writing the code.
 
 [Superpowers](https://github.com/obra/superpowers)' skills fire automatically the moment the agent notices you're building something, and they carry a specific methodology with them: a design doc gets approved before any plan exists, and implementation is strict TDD (red-green-refactor; code written before its test gets deleted).
 
@@ -244,7 +252,7 @@ craftstep is one of several attempts to bring discipline to AI-assisted developm
 
 [GSD Core](https://github.com/open-gsd/gsd-core) is a methodology with its own execution model: a phase loop it drives across sessions, coordinating work over parallel subagents and carrying project state forward itself.
 
-> craftstep skills own no loop and no state: Each does its one step and hands control straight back — there's nothing for it to resume or carry between invocations, because it isn't running your process, you are.
+> craftstep skills carry no state between invocations: each does its one step, leaves its output on disk and hands control straight back — there's nothing for it to resume, because it isn't running your process, you are. `implement` does run a loop — dispatch, gate, at most two fix rounds — but it's one skill deep and ends when that skill does, and every seam it crosses is a file you could have started from instead.
 
 [gstack](https://github.com/garrytan/gstack) models an entire organization around that lifecycle — CEO, engineering manager, designer, security officer, release engineer — each a command with its own gate.
 
