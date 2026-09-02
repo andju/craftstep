@@ -31,8 +31,8 @@ settles it:
 
 1. **The project's CLAUDE.md.** Usually already in context; read it from disk if it isn't.
    Subagents and non-root packages in a monorepo don't always have it.
-2. **`.claude/project.md`**, sections `decisions`, `docs`, `tests`, `reuse`, `extra_checks`. A
-   missing file, a missing section, and a missing key are all normal.
+2. **`.claude/project.md`**, sections `decisions`, `docs`, `tests`, `reuse`. A missing file,
+   a missing section, and a missing key are all normal.
 3. **The repo itself** — package manifest, CI config, existing docs and test layout.
 
 What each fact does here, and how to infer it at source 3:
@@ -45,8 +45,6 @@ What each fact does here, and how to infer it at source 3:
   changed and the input to every effort estimate. Infer by globbing test locations and checking CI.
 - **reuse** — directories holding shared units an option could build on. This is what makes step
   4's minimal-change baseline real rather than a straw option. Infer from where shared code lives.
-- **extra_checks** — cross-cutting questions every change is held against. Here they are
-  candidate criteria, and questions each option has to answer. Infer nothing.
 
 List every fact you inferred rather than read, in one short block, before continuing.
 
@@ -108,8 +106,8 @@ ask me to confirm or correct.
 ## Step 3 — Agree the criteria before you see the options
 
 Propose the criteria this decision will be judged on, ranked, each with one line on why it ranks
-where it does. Draw them from step 2 so they read as specific to this problem, and fold in every
-`extra_checks` question that bears on the decision. Flag anything you're unsure ranks right.
+where it does. Draw them from step 2 so they read as specific to this problem. Flag anything you're
+unsure ranks right.
 
 A criterion that first appears in step 5 means this step was done wrong.
 

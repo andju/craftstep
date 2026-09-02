@@ -24,8 +24,8 @@ Resolve each fact independently, taking the first source that settles it:
 
 1. **The project's CLAUDE.md.** Usually already in context; read it from disk if it
    isn't. Subagents and non-root packages in a monorepo don't always have it.
-2. **`.claude/project.md`**, sections `plans`, `commands`, `tests`, `docs`,
-   `extra_checks`. A missing file, a missing section, and a missing key are all normal.
+2. **`.claude/project.md`**, sections `plans`, `commands`, `tests`, `docs`. A missing
+   file, a missing section, and a missing key are all normal.
 3. **The repo itself** — package manifest, CI config, existing test and docs layout.
 
 What each fact does here, who uses it, and how to infer it at source 3:
@@ -42,9 +42,6 @@ What each fact does here, who uses it, and how to infer it at source 3:
 - **docs** — which docs are user-facing. **Yours**, for acceptance criteria that turn on
   documentation; the spec names the files the subagent touches, so this isn't dispatched.
   Infer from the docs directory; if none are, treat this as a project with no user docs.
-- **extra_checks** — the cross-cutting questions every change is held against. The spec
-  answered them question by question against a design; the subagent re-confirms them from the
-  spec, and your criteria may lean on them. Infer nothing.
 
 List every fact you inferred rather than read, in one short block, before continuing.
 

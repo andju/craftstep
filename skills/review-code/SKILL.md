@@ -22,8 +22,8 @@ Resolve each fact independently; the first source that settles it wins:
 
 1. **The project's CLAUDE.md** — usually in context; read from disk if not (subagents, non-root
    packages in a monorepo).
-2. **`.claude/project.md`**, sections `reviews`, `commands`, `tests`, `docs`, `reuse`,
-   `extra_checks`. A missing file, section or key are all normal.
+2. **`.claude/project.md`**, sections `reviews`, `commands`, `tests`, `docs`, `reuse`. A missing
+   file, section or key are all normal.
 3. **The repo itself** — manifest, CI, lint/formatter/type config, test and docs layout.
 
 What each fact does here, and how to infer it at source 3:
@@ -37,8 +37,6 @@ What each fact does here, and how to infer it at source 3:
   the docs directory; if none is user-facing, the project has no user docs.
 - **reuse** — directories of shared units. Duplication is a finding only when something reusable
   already exists; check here. Infer from where shared code lives.
-- **extra_checks** — cross-cutting questions every change is held against, used here as lenses.
-  Infer nothing.
 
 List every fact you inferred rather than read, in one short block, before continuing.
 
@@ -93,8 +91,6 @@ how findings rank:
 6. **Documentation and standards** — missing or wrong doc comments, user-facing docs (per `docs`)
    the code has outgrown, violations of the language's accepted conventions, configured-rule
    violations including suppressed ones.
-7. **Extra checks** — every `extra_checks` question, asked against this scope. If the section is
-   absent, say so rather than inventing questions.
 
 Evidence: every finding cites `path:line` you actually read, snippet captured as you read it.
 Report nothing about a file you didn't open. A finding you can't confirm from the code is written

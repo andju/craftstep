@@ -22,8 +22,8 @@ Resolve each fact independently; the first source that settles it wins:
 
 1. **The project's CLAUDE.md** — usually in context; read from disk if not (subagents, non-root
    packages in a monorepo).
-2. **`.claude/project.md`**, sections `reviews`, `commands`, `tests`, `reuse`, `extra_checks`. A
-   missing file, section or key are all normal.
+2. **`.claude/project.md`**, sections `reviews`, `commands`, `tests`, `reuse`. A missing file,
+   section or key are all normal.
 3. **The repo itself** — manifest, runner and coverage config, CI workflows, test layout.
 
 What each fact does here, and how to infer it at source 3:
@@ -35,8 +35,6 @@ What each fact does here, and how to infer it at source 3:
   never run them here. Infer from manifest scripts and CI.
 - **reuse** — shared units, including fixture, factory and helper directories. Duplicated setup is
   a finding only when a reusable unit exists. Infer from where tests import their helpers.
-- **extra_checks** — cross-cutting questions every change is held against, asked here of the
-  suite: what test fails if that promise breaks? Infer nothing.
 
 List every fact you inferred rather than read, in one short block, before continuing.
 
@@ -101,8 +99,6 @@ file. Capture the line numbers and snippets you need at read time.
    unicode, very large, duplicate, out-of-order).
 9. **Seams** — API and DB schemas, message formats, external clients: a contract untested, or
     asserted only against a stub this repo also wrote.
-11. **Extra checks** — every `extra_checks` question, asked of the suite. If the section is
-    absent, say so rather than inventing questions.
 
 Evidence: every finding cites `path:line` you actually read, snippet captured at read time — for a
 missing test, the code that lacks one. Never report on a file you didn't open, and never invent a

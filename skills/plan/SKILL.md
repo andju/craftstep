@@ -21,8 +21,8 @@ settles it:
 
 1. **The project's CLAUDE.md.** Usually already in context; read it from disk if it
    isn't. Subagents and non-root packages in a monorepo don't always have it.
-2. **`.claude/project.md`**, sections `plans`, `commands`, `tests`, `docs`, `reuse`,
-   `extra_checks`. A missing file, a missing section, and a missing key are all normal.
+2. **`.claude/project.md`**, sections `plans`, `commands`, `tests`, `docs`, `reuse`.
+   A missing file, a missing section, and a missing key are all normal.
 3. **The repo itself** — package manifest, CI config, existing test and docs layout.
 
 What each fact is, and how to infer it at source 3:
@@ -35,8 +35,6 @@ What each fact is, and how to infer it at source 3:
   out which part is user-facing. If nothing is, treat this as a project with no user docs.
 - **reuse** — directories holding shared units to check before writing new code. Infer
   from where shared code lives in this stack.
-- **extra_checks** — cross-cutting questions every change is held against. Infer
-  nothing.
 - **commands** — how to run each test tier and how to verify a work item. Infer from the
   package manifest's scripts and the CI config.
 
@@ -148,11 +146,6 @@ Use these headings:
 - **Reuse** — the units from the `reuse` directories you checked and did *not* build
   on, and what didn't fit about each. If everything you checked fits, say that instead
   of leaving the section empty.
-- **Extra checks** — every item in the `extra_checks` section, restated as the question
-  it asks, each with its own explicit answer. The implementer re-confirms these answers
-  against the code it writes and is handed no other copy of the questions, so an answer
-  with the question dropped leaves it nothing to check. If the section is absent, say so
-  explicitly.
 - **When this plan is wrong** — name the specific places you're least confident the
   codebase matches the plan, then state the rule: if reality contradicts this spec, stop
   and report the contradiction rather than improvising around it. Only take uncertainty
