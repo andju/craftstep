@@ -2,7 +2,7 @@
 name: implement
 description: Implement an agreed spec — one work item at a time, verifying each, stopping when the codebase contradicts the plan.
 argument-hint: [optional — which work items; blank implements all of it]
-allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, Agent(spec-implementer)
+allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, Agent(spec-implementer), SendMessage
 disable-model-invocation: true
 user-invocable: true
 ---
@@ -11,8 +11,8 @@ We are implementing a spec that `/craftstep:plan` wrote and I reviewed. Scope fo
 (if that's empty, implement the whole spec): $ARGUMENTS
 
 You are the orchestrator, running in my session, and **every step in this file is yours**.
-The implementation is not: the spec's work items, and the tests, docs and extra checks that
-go with them, belong to the `spec-implementer` subagent. They are always delegated.
+The implementation is not: the spec's work items, and the tests and docs that go with them,
+belong to the `spec-implementer` subagent. They are always delegated.
 
 **Stopping rule.** Anywhere below, "stop and ask" means: report what you found, ask me, and
 wait. Never improvise around it, re-scope an item to dodge it, or duplicate code to route
@@ -92,6 +92,11 @@ makes each true — the behaviour you observed, or the test that covers it. A cr
 can't demonstrate is not met, however finished the code looks. The criteria include what must
 *not* change; those get evidence too.
 
+**On a partial run, scope the proof.** Where $ARGUMENTS or the spec's markers left work items
+outside this run, a criterion resting on one of them is outstanding, not failed: name it, name
+the items it waits on, and don't send it to the fix loop. Every criterion the dispatched items
+do reach still gets its evidence.
+
 ### The fix loop — a standing rule, not a one-time step
 
 When the gate or a criterion fails, you may send it back. These hold for every round:
@@ -113,7 +118,8 @@ When the gate or a criterion fails, you may send it back. These hold for every r
 Yours to write:
 
 - Work items done, and any left.
-- Every acceptance criterion, with its evidence.
+- Every acceptance criterion, with its evidence — or, where this run was partial, the
+  outstanding items it waits on.
 - Commands run and their outcome, **quoting the gate output verbatim** rather than
   summarizing it — failures included, and which criteria needed a second round.
 - Deviations: each one the subagent reported, next to the spec's own wording. A command the

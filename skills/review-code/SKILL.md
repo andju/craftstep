@@ -12,7 +12,7 @@ We are reviewing code. Scope for this run (blank → step 1 settles it with me):
 Every finding lands on disk as its own file, written for a fresh session that has no memory of
 this review and will be handed **one such file, or the whole folder, and nothing else**.
 
-**This skill only writes inside `review` folder.** It never touches other files,
+**This skill only writes inside `reviews` folder.** It never touches other files,
 `.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording,
 propose it once you are done and let me apply it.
 
@@ -62,6 +62,10 @@ a shallow pass.
 
 **For a diff scope the unit of review is the change, not the file.** Read whole files for context;
 report only what the change introduced or broke.
+
+**The folder holds one run at a time.** Before the read pass, check `reviews` for files under
+this run's `code-` prefix. Say what is there and wait while I clear it. This skill deletes nothing
+itself, and the other prefix is none of its business.
 
 ## Step 2 — One pass, all lenses
 

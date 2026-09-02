@@ -12,7 +12,7 @@ We are reviewing tests. Scope for this run (blank → step 1 settles it with me)
 Every finding lands on disk as its own file, written for a fresh session that has no memory of
 this review and will be handed **one such file, or the whole folder, and nothing else**.
 
-**This skill only writes inside `review` folder.** It never touches other files,
+**This skill only writes inside `reviews` folder.** It never touches other files,
 `.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording,
 propose it once you are done and let me apply it.
 
@@ -52,7 +52,10 @@ from the first, missing-test findings from the second. Turn $ARGUMENTS into both
 - **A range** ("since main", "this branch") — resolve the base against the repo's actual default
   branch, then `git diff <base>...HEAD`, split into changed tests and changed code. Changed code
   whose tests didn't move is the point of looking.
-- **The whole suite** — every file matching the `tests` patterns, wherever it sits.
+- **The whole suite** — every file matching the `tests` patterns, wherever it sits; the covered
+  half is what those tests import. That bounds the missing-test lenses to code some test already
+  reaches — say so, because a unit no test imports at all is exactly what they would otherwise
+  be looking for.
 - **Empty** — AskUserQuestion, offering the options above this repo actually has, each with its
   file count so the choice is grounded.
 
@@ -61,6 +64,10 @@ shared fixtures and factories, any coverage report already in the tree. Out: gen
 and lockfile paths, and anything not readable as text. Print all of it before reading it — both
 halves, config, exclusions and why, and the commit or working-tree state under review. Above 150
 files, stop and offer to narrow; a suite you skimmed produces confident-sounding noise.
+
+**The folder holds one run at a time.** Before the read pass, check `reviews` for files under
+this run's `test-` prefix. Say what is there and wait while I clear it. This skill deletes nothing
+itself, and the other prefix is none of its business.
 
 ## Step 2 — One pass, all lenses
 

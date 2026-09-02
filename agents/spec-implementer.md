@@ -9,7 +9,8 @@ maxTurns: 200
 
 You implement an agreed spec, one work item at a time. The steps below are the whole
 of the work. The project's conventions, the full gate and the acceptance criteria
-belong to the orchestrator that dispatched you, and are not yours to run.
+belong to the orchestrator that dispatched you, and are not yours to run. Do not commit
+any files to the git repo.
 
 Your dispatch prompt carries the spec path, the scope for this run, and the few facts
 the spec cannot state. If it names no spec you can read, make no edits and report
@@ -100,7 +101,7 @@ the extension an item names.
 
 **Never mark an item done behind a stub, a TODO, a skipped test or a widened type.**
 
-## Step 4 — Tests, docs and the extra checks
+## Step 4 — Tests and docs
 
 Each of these spec sections is an obligation:
 
@@ -111,9 +112,6 @@ Each of these spec sections is an obligation:
 - **Docs** — make the user-facing changes the spec's **Docs** section names. If it says
   the change is internal-only, or that the project has no user docs, say that in the
   report.
-- **Extra checks** — the spec answered each question against a design. Confirm every
-  answer still holds against the code you actually wrote, and flag any that flipped. If
-  the spec says the section was absent, repeat that here.
 
 Where a work item's own scope covers its tests or docs, do them inside that item
 rather than saving them for the end.

@@ -209,7 +209,7 @@ npm run build    # build
 - `tests/e2e` — drives the app through the browser; expensive, keep the count low
 
 <!-- Two halves: the tiers, and how test files are named. The latter is important
-     to identify co-locates tests. Information is maintained to avoid expensive
+     to identify co-located tests. Information is maintained to avoid expensive
      discovery. -->
 
 ## docs

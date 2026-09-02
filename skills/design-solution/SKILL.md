@@ -2,7 +2,7 @@
 name: design-solution
 description: Design a solution before anything gets planned — interview me, weigh genuinely different options against criteria we agree, then recommend one and write the decision record. Never writes a spec or code.
 argument-hint: [the problem this run settles; blank asks]
-allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(mkdir:*), Write, Edit, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(mkdir:*), Write, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
 ---
