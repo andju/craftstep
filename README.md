@@ -3,9 +3,30 @@ Reusable Claude Code skills for individual steps of the software development
 lifecycle - design, implementation and review - each one on-demand expertise
 you invoke when you hit that step, not a one-size-fits-all agent.
 
+The goal is to keep the developer in control of the process, with room to
+course-correct early rather than after a large diff has already landed.
+
 The plugin is intended for small to medium-sized projects maintained by single
-developers or small teams. For more complex setups, an
+developers or small teams. For more complex setups or full automation, an
 [alternative framework](#alternative-frameworks) might work better.
+
+## Setting it up
+
+Create the [project.md](#projectmd) file by executing:
+
+```
+/craftstep:setup
+```
+
+It works each section out from your project, shows you the draft with the evidence
+behind every value, and asks you to accept, replace or omit each one before writing.
+Sections your `CLAUDE.md` already covers are dropped, and a section whose value only
+matches the documented default is recommended for omission. So a repo might ends up
+with a short file or none at all. Re-run it later and it adds what's missing, leaving
+the sections you already have untouched.
+
+**Recommended model: any.** It reads the repo, proposes, and writes one short file — every
+value passes your acceptance before it lands, so a wrong guess costs a keystroke.
 
 ## How it works
 
@@ -156,13 +177,13 @@ For any one fact, a skill takes the first of three sources that settles it,
 in this order: the repo's own `CLAUDE.md`, then `.claude/project.md`, then
 inference from the repo itself.
 
-### `.claude/project.md`
+### project.md
 
 Facts you don't keep in `CLAUDE.md` live in one shared file per repo:
-`.claude/project.md`. Every skill in this repo reads from this file, so the
-facts stay in one place as the repo evolves. It exists specifically to resolve
-ambiguity the repo doesn't settle, so where it contradicts what a skill would
-otherwise infer from the code, the file wins.
+`.claude/project.md`. Every skill reads from this file, so the facts stay in
+one place as the repo evolves. It exists specifically to resolve ambiguity the
+repo doesn't settle, so where it contradicts what a skill would otherwise infer
+from the code, the file wins.
 
 The schema is organized into sections, each covering one category of
 repo-specific fact. **Skip any section whose content your `CLAUDE.md` already
