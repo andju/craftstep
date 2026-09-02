@@ -204,10 +204,9 @@ npm run build    # build
 
 ## tests
 
-- `tests/unit` — pure logic, no I/O, no framework mounting
+- Named `*.test.ts`, wherever they sit — pure logic, no I/O, no framework mounting
 - `tests/integration` — crosses a real boundary (db, filesystem, HTTP client)
 - `tests/e2e` — drives the app through the browser; expensive, keep the count low
-- Named `*.test.ts`, wherever they sit — unit tests are co-located beside the code they cover
 
 <!-- Two halves: the tiers, and how test files are named. The latter is important
      to identify co-locates tests. Information is maintained to avoid expensive
@@ -229,13 +228,6 @@ npm run build    # build
 - `tests/fixtures/` — shared fixtures and factories; new test setup builds on these
 
 <!-- Shared test fixtures, factories and helpers belong here too. -->
-
-## extra_checks
-
-- Does this need a database migration? If so, is it reversible?
-- Does this add user-visible strings? They must go through the i18n catalogue.
-- Does this need a feature flag, and what's the removal condition?
-- Does this change a public API surface? If so, note the version impact.
 ````
 
 ## Alternative frameworks

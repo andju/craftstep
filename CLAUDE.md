@@ -3,11 +3,6 @@
 `craftstep` is a Claude Code **plugin**. It ships no application code — the
 deliverable is prose: skill instructions that other repos install and invoke.
 
-### POC material
-
-`skills/review-to-prompts/` — reference only and
-go away short- to mid-term. Don't extend it and don't fix bugs in it.
-
 ## The contract skills must honour
 
 Every skill in this plugin resolves its repo-specific facts from **three**
