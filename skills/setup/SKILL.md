@@ -14,10 +14,11 @@ this run (if that's empty, all of them): $ARGUMENTS
 touches code or config, and never creates the folders a section names — a path is recorded
 here, not built.
 
-The file exists to settle what the repo leaves ambiguous. A section that only restates what a
-skill would infer anyway is a second copy to keep current, so the default outcome for a section
-is *omit it*, and a proposal has to earn its place: it differs from the default, it's expensive
-to rediscover, or the repo genuinely doesn't say.
+The file is a plain sequence of `## ` sections and nothing else. It exists to settle what the
+repo leaves ambiguous. A section that only restates what a skill would infer anyway is a second
+copy to keep current, so the default outcome for a section is *omit it*, and a proposal has to
+earn its place: it differs from the default, it's expensive to rediscover, or the repo genuinely
+doesn't say.
 
 ## Step 0 — Where the file goes, and what already settles things
 
@@ -31,7 +32,9 @@ Then read, in this order, and let each one shrink the work:
    section from this run and say which sections CLAUDE.md covered.
 2. **An existing `.claude/project.md`** — normal on a re-run. Sections already in it are
    decided: leave them alone. Propose only the missing ones, plus any section where the repo
-   now plainly contradicts the file — and for those, show both values and let me choose.
+   now plainly contradicts the file — and for those, show both values and let me choose. A
+   section already in the file that CLAUDE.md also settles is the copy that loses: name it,
+   show both values, and offer to drop it. Never remove one without asking.
 3. **Monorepo check.** If the root holds several packages, this file covers the repo. Where a
    package differs materially, record the difference as a line inside the relevant section
    rather than proposing a second file.
@@ -74,8 +77,18 @@ Print two things, in this order:
 2. **The file as it would land**, in schema order (`plans`, `decisions`, `reviews`, `commands`,
    `tests`, `docs`, `reuse`), so I'm accepting real text rather than a description of it.
 
+The draft is file content, not part of your message: print it **inside a single fenced block,
+fenced with four backticks**.
+
 Say plainly which proposals you're least sure of. A command you never ran is unproven, and a
 tier boundary read off two files is a sample.
+
+Then ask me with `AskUserQuestion` what to do with the draft as a whole, before any
+section-by-section questions:
+
+- **Accept the whole draft** — skip Step 3 and write it as printed.
+- **Go through it section by section** — continue to Step 3.
+- **Discard it** — write nothing and stop.
 
 ## Step 3 — Get each section accepted
 
@@ -85,8 +98,9 @@ Ask about every section still in scope — one question per section, batched fou
 - **Accept as proposed.**
 - **A second candidate**, but only where the repo actually offered one (two plausible docs
   trees, a manifest script and a CI job that disagree). Don't manufacture an alternative.
-- **Omit the section.** Recommend this one when the value only matches the documented default
-  or restates what any skill would infer in seconds.
+- **Omit the section.** Recommend this one when the value only matches the documented default,
+  restates what any skill would infer in seconds, or duplicates something CLAUDE.md already
+  states under a heading of its own.
 
 I can always type my own value instead of picking, so keep options concrete and short.
 

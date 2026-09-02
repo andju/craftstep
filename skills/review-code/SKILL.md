@@ -38,7 +38,8 @@ What each fact does here, and how to infer it at source 3:
 - **reuse** — directories of shared units. Duplication is a finding only when something reusable
   already exists; check here. Infer from where shared code lives.
 
-List every fact you inferred rather than read, in one short block, before continuing.
+Where two sources settle the same fact differently, the higher one wins. List every fact in one short
+block, each with the source that settled it.
 
 ## Step 1 — Settle the scope, then print the review set
 

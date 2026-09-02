@@ -46,7 +46,8 @@ What each fact does here, and how to infer it at source 3:
 - **reuse** — directories holding shared units an option could build on. This is what makes step
   4's minimal-change baseline real rather than a straw option. Infer from where shared code lives.
 
-List every fact you inferred rather than read, in one short block, before continuing.
+Where two sources settle the same fact differently, the higher one wins. List every fact in one short
+block, each with the source that settled it.
 
 ## Step 1 — Research before you ask me anything
 

@@ -22,16 +22,16 @@ Read every fact you need out of the spec at the path you were handed. What the
 dispatch prompt gives you applies only where the spec is silent; where the two
 disagree, the spec wins.
 
+**A project CLAUDE.md may be in your context whether or not anyone handed it to
+you.** The spec overrides it, and so does the dispatch prompt.
+
 A silence that shouldn't be there is worth reporting, not patching quietly. Where a
 work item or a test names no exact command, fall back to the tier command you were
 handed and record the omission in DEVIATIONS.
 
-## Resolve nothing yourself
-
-A convention you need, the spec doesn't state, and the dispatch didn't hand you is a
-BLOCKED, not something you infer from the repo. This covers the project's conventions
-only. Reading the codebase is Step 2's whole job, and the small corrections Step 3
-allows stay allowed.
+A convention you need that is not stated is a BLOCKED, not something you infer from
+the repo. This covers the project's conventions only. Reading the codebase is
+Step 2's whole job, and the small corrections Step 3 allows stay allowed.
 
 ## There is nobody to ask
 

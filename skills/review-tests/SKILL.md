@@ -36,7 +36,8 @@ What each fact does here, and how to infer it at source 3:
 - **reuse** — shared units, including fixture, factory and helper directories. Duplicated setup is
   a finding only when a reusable unit exists. Infer from where tests import their helpers.
 
-List every fact you inferred rather than read, in one short block, before continuing.
+Where two sources settle the same fact differently, the higher one wins. List every fact in one short
+block, each with the source that settled it.
 
 ## Step 1 — Settle the scope, then print the review set
 

@@ -25,8 +25,9 @@ matches the documented default is recommended for omission. So a repo might ends
 with a short file or none at all. Re-run it later and it adds what's missing, leaving
 the sections you already have untouched.
 
-**Recommended model: any.** It reads the repo, proposes, and writes one short file — every
-value passes your acceptance before it lands, so a wrong guess costs a keystroke.
+**Recommended model: Haiku.** It reads the repo, proposes, and writes one short file
+— every value passes your acceptance before it lands, so a wrong guess costs a
+keystroke.
 
 ## How it works
 
@@ -68,11 +69,13 @@ left to decide later — and the interview has to push back where the plan won't
 work. Those two degrade before anything else does on a smaller model, and a
 spec that hedges still reads fine.
 
+#### Review the spec
+
 Review the spec, add comments if needed
 (e.g., `<!-- Revisit if this statement is correct. -->`) and ask Claude Code to
 review your comments. If you are using Visual Studio Code, I recommend the extension
 [Markdown Pro](https://marketplace.visualstudio.com/items?itemName=AmartyaKhan.markdown-pro-commenter)
-to add your comments.
+to add comments.
 
 The spec is a working document — keep it on the feature branch, or gitignore
 it. What happens to the file, once the feature is implemented, is your call:
@@ -91,14 +94,14 @@ implementation:
 It will implement the spec, working one item at a time and verify each before
 starting the next. Where the codebase contradicts the spec it stops and asks.
 
-**Recommended model: Opus (high–xhigh)** — Fast mode if the run is long. The step splits
-itself across two models: `/craftstep:implement` runs on Opus and delegates the
-work items to a Sonnet subagent. Opus resolves the project facts once, clears
-the spec for dispatch and hands down only what the spec itself can't state —
-the subagent reads the rest from the spec — then runs the full gate itself,
-proves every acceptance criterion,
-and owns the fix loop — at most two rounds, each one re-run and re-checked
-rather than taken on the subagent's word. Sonnet does the editing.
+**Recommended model: Opus (high–xhigh)** — Fast mode if the run is long. The
+step splits itself across two models: `/craftstep:implement` runs on the
+specified model and delegates the work items to a Sonnet subagent. The
+specified model resolves the project facts once, clears the spec for dispatch
+and hands down only what the spec itself can't state — the subagent reads the
+rest from the spec — then runs the full gate itself, proves every acceptance
+criterion, and owns the fix loop — at most two rounds, each one re-run and
+re-checked rather than taken on the subagent's word. Sonnet does the editing.
 
 What the split buys is cost: implementation is the token-heaviest step of the
 lifecycle, and Sonnet is roughly 60% cheaper on it. What it costs is proximity.
@@ -121,15 +124,16 @@ For each finding a self-contained fix prompt is written into the `reviews`
 folder (prefixed `code-` and `test-`). You can reference each file in a
 prompt and ask to fix it.
 
-**Recommended model: Opus (code: xhigh, tests: xhigh–max).** A missed finding leaves no trace — you can't tell
-a thorough review from a shallow one by reading the folder it produced — and
-each run reads its file set once, applying every lens as it goes.
-`review-tests` spends half its pass on the tests that *aren't* there, which
-needs a model of the covered code rather than a scan of the suite. Neither
-review is expensive: a bounded set of files in, short documents out.
-
 The two reviews are independent; run either, both, or neither. Skipping
 `review-tests` on a change with no test surface is normal.
+
+**Recommended model: Opus (code: xhigh, tests: xhigh–max).** A missed finding
+leaves no trace — you can't tell a thorough review from a shallow one by
+reading the folder it produced — and each run reads its file set once, applying
+every lens as it goes. `review-tests` spends half its pass on the tests that
+*aren't* there, which needs a model of the covered code rather than a scan of
+the suite. Neither review is expensive: a bounded set of files in, short
+documents out.
 
 ### Complex feature — design the solution first
 
@@ -147,6 +151,11 @@ genuinely different options against them, and recommends one — writing a
 decision record under `decisions`. Run `craftstep:plan` (in a separate session)
 next, and use the record as input. From there the feature tier runs unchanged.
 
+Running this skill on a change that has one obvious implementation wastes an
+interview to rediscover that; the cost of skipping it when you shouldn't have
+is a design decision made implicitly, inside a spec, with no record of what
+lost.
+
 **Recommended model: Opus, or Fable 5 for a one-way door (xhigh).** Nothing downstream
 checks a decision record: a weak one doesn't fail a test, it quietly misdirects
 every spec written after it. The step also asks for self-restraint — hold three or four
@@ -156,11 +165,6 @@ leaving one idea at three sizes. It costs an interview and one document, so
 there is little to save here and a lot to lose; where the choice is expensive
 to reverse, Fable 5's extra reasoning is worth the price on that few thousand
 tokens.
-
-Reaching for it on a change that has one obvious implementation wastes an
-interview to rediscover that; the cost of skipping it when you shouldn't have
-is a design decision made implicitly, inside a spec, with no record of what
-lost.
 
 ## Project facts
 
