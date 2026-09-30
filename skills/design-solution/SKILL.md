@@ -88,7 +88,10 @@ Cover, as needed:
 - **Scale** — who and what is affected, today's volume, the growth you have to hold.
 - **Trade-off appetite** — where I'll give ground: speed vs. cost, build vs. buy, ideal vs. shippable.
 - **Reversibility** — cheaply reversible or a one-way door: it sets how much evidence step 5 needs.
-- **Prior attempts** — tried before, and what happened.
+- **Prior attempts** — tried before, and what happened; also what has already been ruled out,
+  and why — a rejected option needs a reason before it stays off the table.
+- **Your instinct** — what you're currently leaning towards, and your gut worry. It gives step 5 a
+  position to argue with rather than one to discover.
 
 If the answers say the stated problem isn't the real problem, say so plainly and get the reframing
 agreed before continuing — don't design against a problem you no longer believe in. If a stated
