@@ -10,6 +10,38 @@ The plugin is intended for small to medium-sized projects maintained by single
 developers or small teams. For more complex setups or full automation, an
 [alternative framework](#alternative-frameworks) might work better.
 
+## Installation
+
+craftstep is installed from its [GitHub repository](https://github.com/andju/craftstep),
+which doubles as a plugin marketplace named `craftstep`. The skills are then
+available as `/craftstep:<name>`.
+
+### Claude Code (CLI)
+
+Add the marketplace and install the plugin:
+
+```
+/plugin marketplace add andju/craftstep
+/plugin install craftstep@craftstep
+```
+
+The same works from your shell:
+
+```
+claude plugin marketplace add andju/craftstep
+claude plugin install craftstep@craftstep
+```
+
+To update, run `/plugin marketplace update craftstep`.
+
+### Claude Code for Visual Studio Code
+
+1. Type `/plugins` in the prompt box to open **Manage plugins**.
+2. In the **Marketplaces** tab, add `andju/craftstep`.
+3. In the **Plugins** tab, click **Install** on `craftstep` and choose the scope:
+   for you (all projects), for the project, or locally.
+4. If asked, restart Claude to apply the plugin changes.
+
 ## Setting it up
 
 Create the [project.md](#projectmd) file by executing:
