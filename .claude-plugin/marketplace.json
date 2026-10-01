@@ -1,0 +1,14 @@
+{
+  "name": "craftstep",
+  "description": "Skills for individual steps of the software development lifecycle.",
+  "owner": {
+    "name": "andju"
+  },
+  "plugins": [
+    {
+      "name": "craftstep",
+      "source": "./",
+      "description": "Skills for individual steps of the software development lifecycle - design, implementation and review - each invoked when you hit that step."
+    }
+  ]
+}
