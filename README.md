@@ -126,21 +126,25 @@ implementation:
 It will implement the spec, working one item at a time and verify each before
 starting the next. Where the codebase contradicts the spec it stops and asks.
 
-**Recommended model: Opus (high–xhigh)** — Fast mode if the run is long. The
-step splits itself across two models: `/craftstep:implement` runs on the
-specified model and delegates the work items to a Sonnet subagent. The
-specified model resolves the project facts once, clears the spec for dispatch
-and hands down only what the spec itself can't state — the subagent reads the
-rest from the spec — then runs the full gate itself, proves every acceptance
-criterion, and owns the fix loop — at most two rounds, each one re-run and
-re-checked rather than taken on the subagent's word. Sonnet does the editing.
+**Recommended model: Opus (high–xhigh).** The step splits itself across two
+models: `/craftstep:implement` runs on the specified model and delegates the
+work items to a Sonnet subagent. The specified model resolves the project
+facts once, clears the spec for dispatch and hands down only what the spec
+itself can't state — the subagent reads the rest from the spec — then runs the
+full gate itself, proves every acceptance criterion, and owns the fix loop — at
+most two rounds, each one re-run and re-checked rather than taken on the
+subagent's word. Sonnet does the editing.
 
-What the split buys is cost: implementation is the token-heaviest step of the
-lifecycle, and Sonnet is roughly 60% cheaper on it. What it costs is proximity.
-Opus judges the result from the working tree and from re-running the commands
-itself, not from having watched the work happen — so a subagent that routed
-around an obstacle instead of reporting it gets caught by the gate and the
-acceptance criteria, or not at all.
+What the split buys is cost, and a check by a model that didn't write the code.
+Implementation is the token-heaviest step of the lifecycle, and Sonnet costs
+half as much per token — less in practice, since most of a long run's tokens
+are cache reads, which cost the same on both. And Opus proves the result
+without having made the choices behind it, so it has no reasoning of its own to
+take for evidence. The same distance is what the split costs: Opus judges the
+result from the working tree and from re-running the commands itself, not from
+having watched the work happen — so a subagent that routed around an obstacle
+instead of reporting it gets caught by the gate and the acceptance criteria, or
+not at all.
 
 #### Validate and fix
 
@@ -188,14 +192,14 @@ interview to rediscover that; the cost of skipping it when you shouldn't have
 is a design decision made implicitly, inside a spec, with no record of what
 lost.
 
-**Recommended model: Opus, or Fable 5 for a one-way door (xhigh).** Nothing downstream
+**Recommended model: Opus, or Fable for a one-way door (xhigh).** Nothing downstream
 checks a decision record: a weak one doesn't fail a test, it quietly misdirects
 every spec written after it. The step also asks for self-restraint — hold three or four
 genuinely different options at their strongest, and recommend none of them
 before the criteria are agreed — which is what a smaller model drops first,
 leaving one idea at three sizes. It costs an interview and one document, so
 there is little to save here and a lot to lose; where the choice is expensive
-to reverse, Fable 5's extra reasoning is worth the price on that few thousand
+to reverse, Fable's extra reasoning is worth the price on that few thousand
 tokens.
 
 ## Project facts
