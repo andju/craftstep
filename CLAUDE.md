@@ -14,7 +14,7 @@ this order):
    a skill reads it from disk only when it isn't — inside a subagent, or a
    non-root package in a monorepo.
 2. **`.claude/project.md`** in the consuming repo, under a fixed section
-   schema: `plans`, `decisions`, `reviews`, `commands`, `tests`, `docs`, `reuse`.
+   schema: `plans`, `decisions`, `commands`, `tests`, `docs`, `reuse`.
    A missing file, a missing section, and a missing key are all normal.
 3. **Inference from the repo itself** — package manifest, CI config, existing
    test and docs layout — when neither source above settles the fact.

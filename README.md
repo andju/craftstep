@@ -10,7 +10,8 @@ you invoke when you hit that step, not a one-size-fits-all agent.
 | Agree on what gets built | `/craftstep:plan <feature>` | a spec |
 | Read the spec, comment where it's wrong | you | a spec you agree with |
 | Build it, in a fresh session | `/craftstep:implement` | code gated and checked against the spec |
-| Review the result — either, both or neither | `/craftstep:review-code <scope>`<br>`/craftstep:review-tests <scope>` | one fix prompt per finding |
+| Review the result — either, both or neither | `/craftstep:review-code <scope>`<br>`/craftstep:review-tests <scope>` | a checklist of findings |
+| Fix the findings, one per run | `/craftstep:fix [finding]` | the fix, ticked off in the checklist |
 
 Every step hands over through a file, not a context window, so each one can
 start in a fresh session. [How it works](#how-it-works) covers each
@@ -177,20 +178,64 @@ different commands for code and tests:
 /craftstep:review-tests
 ```
 
-For each finding a self-contained fix prompt is written into the `reviews`
-folder (prefixed `code-` and `test-`). You can reference each file in a
-prompt and ask to fix it.
+Each review writes one document into the repo root —
+`code-findings.md` or `test-findings.md`: a checklist on top, then for each
+finding what's wrong, where, and which way the fix should go. Not the fix
+itself: `/craftstep:fix` decides that, one finding at a time, against the code
+as it is by then — see [Fix](#fix).
 
 The two reviews are independent; run either, both, or neither. Skipping
 `review-tests` on a change with no test surface is normal.
 
 **What it needs from a model: thoroughness you can't check afterwards.** A
 missed finding leaves no trace — you can't tell a thorough review from a shallow
-one by reading the folder it produced — and each run reads its file set once,
+one by reading the document it produced — and each run reads its file set once,
 applying every lens as it goes. `review-tests` spends half its pass on the tests
 that *aren't* there, which needs a model of the covered code rather than a scan
-of the suite. Neither review is expensive: a bounded set of files in, short
-documents out. **Recommended: Opus (code: xhigh, tests: xhigh–max).**
+of the suite. Neither review is expensive: a bounded set of files in, one short
+document out. **Recommended: Opus (code: xhigh, tests: xhigh–max).**
+
+#### Fix
+
+Work the findings off one at a time — the one you name, or the next one still
+open:
+
+```
+/craftstep:fix code-03
+/craftstep:fix
+```
+
+A finding is a claim from one read of the code, never checked since, so each
+run starts by checking it: the cited code still says what the finding quotes,
+and the place the finding says would make it fine — the caller that already
+validates, the test that already covers it — doesn't. A low-confidence finding
+is never applied on its word: it is settled from the code, by a regression test
+that has to fail first, or by asking you.
+
+Only then does it decide the fix, against the code as it is by then — earlier
+fixes may have moved it — and write it up as a short brief. Where the brief
+decides something the finding's direction left open — a public name, an
+error-handling policy, behaviour a caller can see — it shows you the brief and
+asks first; mechanical fixes go ahead, since the diff is yours to read before
+you commit. Add `ask` or `no-ask` to force or skip that question.
+
+Each run ticks its finding off in the checklist — fixed, not a defect, or left
+open because it needs you — so a blank run always knows which one is next. It
+reads nothing of the document but the checklist and its own finding, however
+long the review was. One finding per run; clear the session between runs
+(`/clear`), since a review's worth of fixes in one context pays for every
+earlier one again on every turn.
+
+**What it needs from a model: doubt before the edit, judgement in the brief,
+diligence in the edit.** Like `/craftstep:implement`, the step splits across two
+models. Your session's model does the checking and makes the calls — whether
+the finding is real, what the fix is, whether the diff and the checks hold —
+and applies the smallest fixes itself, where starting a subagent would cost
+more than the edit. Anything larger goes, as the brief, to a subagent on the
+`sonnet` alias (set in [finding-fixer.md](agents/finding-fixer.md)), which writes
+the test first where the brief asks for one, makes the edit and runs the
+checks; the session re-runs them rather than taking its word, and allows it one
+round back. **Recommended: Opus (high) for the session.**
 
 ### Complex feature — design the solution first
 
@@ -269,14 +314,6 @@ back to inferring from the repo and say which facts were inferred:
 <!-- Where design and decision records live.
      Defaults to `docs/architecture/decisions/` when unset. -->
 
-## reviews
-
-`docs/code-review/`
-
-<!-- The folder review findings are written to, one file per finding. Code and
-     test review share it, prefixed `code-` and `test-` respectively.
-     Defaults to `docs/code-review/` when unset. -->
-
 ## commands
 
 ```bash
@@ -326,7 +363,7 @@ craftstep is one of several attempts to bring discipline to AI-assisted developm
 
 [feature-dev](https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev), Anthropic's own plugin, covers the same lifecycle with no methodology attached. It is one command, though — `/feature-dev` runs discovery, codebase exploration, architecture, implementation and review as seven phases of a single session, fanning out to explorer, architect and reviewer subagents, and holding the plan and the findings in that session's context.
 
-> craftstep splits the same lifecycle into skills you invoke one at a time, and each writes its output to disk: a decision record, a spec you read before anything is implemented, one file per review finding. Nothing has to survive between steps in a context window, and the reviewer never remembers writing the code.
+> craftstep splits the same lifecycle into skills you invoke one at a time, and each writes its output to disk: a decision record, a spec you read before anything is implemented, a checklist of review findings. Nothing has to survive between steps in a context window, and the reviewer never remembers writing the code.
 
 [Superpowers](https://github.com/obra/superpowers)' skills fire automatically the moment the agent notices you're building something, and they carry a specific methodology with them: a design doc gets approved before any plan exists, and implementation is strict TDD (red-green-refactor; code written before its test gets deleted).
 

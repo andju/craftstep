@@ -42,7 +42,7 @@ Then read, in this order, and let each one shrink the work:
 ## Step 1 — Work out each section from the repo
 
 Every proposal cites its evidence: a file path, a manifest script name, a CI job. Where you
-find no evidence, the proposal is the documented default (`plans`, `decisions`, `reviews`) or
+find no evidence, the proposal is the documented default (`plans`, `decisions`) or
 "leave unset" (`commands`, `tests`, `docs`, `reuse`) — never a plausible-looking guess.
 **Don't run any command you find**, and don't create anything to make a path exist.
 
@@ -50,8 +50,6 @@ find no evidence, the proposal is the documented default (`plans`, `decisions`, 
   folder, or a spec path named in CLAUDE.md or `.gitignore`. Default `SPEC.md` at the root.
 - **decisions** — where design and decision records live. Glob for `adr`, `decisions`,
   `rfc`, `docs/architecture`. Default `docs/architecture/decisions/`.
-- **reviews** — the folder review findings are written to, one file per finding. Look for an
-  existing review folder and for an ignore-rule covering one. Default `docs/code-review/`.
 - **commands** — how to run tests, lint, build, typecheck. Take them from the package manifest
   scripts, `Makefile`/`justfile`, or the CI workflow, and prefer what CI actually runs over
   what the manifest merely defines. One line each, with a trailing comment naming what it is.
@@ -74,8 +72,8 @@ Print two things, in this order:
 
 1. **One line per section**: the proposed value, where it came from, whether you read it or
    inferred it, and whether it just matches the documented default.
-2. **The file as it would land**, in schema order (`plans`, `decisions`, `reviews`, `commands`,
-   `tests`, `docs`, `reuse`), so I'm accepting real text rather than a description of it.
+2. **The file as it would land**, in schema order (`plans`, `decisions`, `commands`, `tests`,
+   `docs`, `reuse`), so I'm accepting real text rather than a description of it.
 
 The draft is file content, not part of your message: print it **inside a single fenced block,
 fenced with four backticks**.

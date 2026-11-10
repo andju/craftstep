@@ -1,18 +1,18 @@
 ---
 name: review-code
-description: Review a scope I name — uncommitted changes, a folder, a branch — and write one self-contained fix prompt per finding into the review folder. Never fixes what it finds and excludes tests.
+description: Review a scope I name — uncommitted changes, a folder, a branch — and write the findings as one checklist document into the repo root, for /craftstep:fix to work through. Never fixes what it finds and excludes tests.
 argument-hint: [what to review — e.g. uncommitted changes, src/api, since main; blank asks]
-allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(mkdir:*), Write, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash(git:*), Write, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
 ---
 
 We are reviewing code. Scope for this run (blank → step 1 settles it with me): $ARGUMENTS
 
-Every finding lands on disk as its own file, written for a fresh session that has no memory of
-this review and will be handed **one such file, or the whole folder, and nothing else**.
+The findings land on disk as one document, `code-findings.md`: read by me, and worked through one
+finding at a time by `/craftstep:fix`, in a later session that has no memory of this review.
 
-**This skill only writes inside `reviews` folder.** It never touches other files,
+**This skill writes one file: `code-findings.md` at the repo root.** It never touches other files,
 `.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording,
 propose it once you are done and let me apply it.
 
@@ -22,15 +22,14 @@ Resolve each fact independently; the first source that settles it wins:
 
 1. **The project's CLAUDE.md** — usually in context; read from disk if not (subagents, non-root
    packages in a monorepo).
-2. **`.claude/project.md`**, sections `reviews`, `commands`, `tests`, `docs`, `reuse`. A missing
-   file, section or key are all normal.
+2. **`.claude/project.md`**, sections `commands`, `tests`, `docs`, `reuse`. A missing file,
+   section or key are all normal.
 3. **The repo itself** — manifest, CI, lint/formatter/type config, test and docs layout.
 
 What each fact does here, and how to infer it at source 3:
 
-- **reviews** — where findings are written. Infer nothing; default `docs/code-review/`.
-- **commands** — lint, types, build, each test tier; every finding names the command that proves
-  its fix. Infer from manifest scripts and CI.
+- **commands** — lint, formatter, types; their config is a standard step 2 enforces. Infer from
+  manifest scripts and CI.
 - **tests** — how to identify test files, that drop out of the review set wherever they sit: infer
   from the runner's config and the language's convention.
 - **docs** — which docs are user-facing, for findings about docs the code has outgrown. Infer from
@@ -56,17 +55,18 @@ Turn $ARGUMENTS into an explicit file list *before* reading any of it:
   file count so the choice is grounded.
 
 Remove **test files, matched by the `tests` patterns anywhere in the tree**, fixtures, test
-factories, mocks and snapshots. Out too: generated, vendored and lockfile paths, and anything not
-readable as text. Print the set before reading it: file count, exclusions and why, and the commit or
-working-tree state under review. Above 150 files, stop and offer to narrow rather than quietly doing
+factories, mocks and snapshots. Out too: generated, vendored and lockfile paths, the review documents
+`code-findings.md` and `test-findings.md`, and anything not readable as text. Print the set
+before reading it: file count, exclusions and why, and the commit or working-tree state under
+review. Above 150 files, stop and offer to narrow rather than quietly doing
 a shallow pass.
 
 **For a diff scope the unit of review is the change, not the file.** Read whole files for context;
 report only what the change introduced or broke.
 
-**The folder holds one run at a time.** Before the read pass, check `reviews` for files under
-this run's `code-` prefix. Say what is there and wait while I clear it. This skill deletes nothing
-itself, and the other prefix is none of its business.
+**The repo root holds one run at a time.** Before the read pass, check the repo root
+(`git rev-parse --show-toplevel`) for a `code-findings.md`. If one is there, say so and wait while
+I clear it. This skill deletes nothing itself, and `test-findings.md` is none of its business.
 
 ## Step 2 — One pass, all lenses
 
@@ -99,21 +99,48 @@ how findings rank:
 
 Evidence: every finding cites `path:line` you actually read, snippet captured as you read it.
 Report nothing about a file you didn't open. A finding you can't confirm from the code is written
-at low confidence with the one thing that would settle it. A clean scope produces no files, and
-saying so is the correct outcome — never pad the folder.
+at low confidence with the one thing that would settle it. A clean scope produces an empty
+checklist, and saying so is the correct outcome — never pad it.
 
-## Step 3 — Write one file per finding
+## Step 3 — Write the findings document
 
-Create the `reviews` folder if absent. Write each finding immediately as `code-NN.md`
-— `NN` zero-padded, numbered in the order fixes should be applied.
+Write `code-findings.md` at the repo root. Number the findings `NNN`, zero-padded, in
+the order fixes should be applied.
 
-One file is one fix. Merge findings that share a root cause, repeat one mechanical change across
-sites, or would leave the code inconsistent if fixed apart. **Two findings must never ask
-for conflicting edits to the same lines** — merge them, or state the dependency in `Apply`, since
-the whole folder may be handed over at once.
+One finding is one fix. Merge findings that share a root cause, repeat one mechanical change across
+sites, or would leave the code inconsistent if fixed apart. **Two findings must never point
+opposite ways on the same lines** — merge them, or state the dependency in `Apply`.
+
+**Write what only this review knows, and stop there.** The fixer confirms each finding against the
+code and decides the edit itself, against the code as it is by then — earlier fixes will have moved
+it. What it can't get from the code is what this pass saw across the whole set: every site, how
+findings depend on each other, which way a fix should go and what it must stay consistent with. The
+edit, what it mustn't touch and the commands that prove it are the fixer's; don't write them.
+
+**The fixer reads one section, never the whole document.** Each finding stands alone: no section
+leans on another, or on the systemic patterns, except by number. The checklist is the fixer's to
+tick off — leave every box empty.
+
+A long document goes in parts: the header and checklist first, then the findings, appended in order.
 
 ````markdown
-# NN — <title>
+# Code review — <scope> · <commit, or working tree> · <date>
+
+Scope; exclusions and why; counts by severity and by category.
+
+## Checklist
+
+- [ ] **001** · <severity> · <category> — <title>
+- [ ] **002** · <severity> · <category> · low confidence — <title>
+
+## Systemic patterns
+
+The three to five patterns worth fixing at the root rather than per instance. One that is itself
+actionable is a finding of its own, named here by number.
+
+## Findings
+
+### 001 — <title>
 
 - **Category:** correctness | performance | security | maintainability | architecture | documentation
 - **Severity:** critical | high | medium | low
@@ -121,45 +148,26 @@ the whole folder may be handed over at once.
 - **Sites:** `path:line`, `path:line-range`
 - **Apply:** independent | after NN | together with NN
 
-## What's wrong
-The behaviour today, quoted from the code, for someone who has never opened this repo.
+**What's wrong.** The behaviour today, quoted from the code, for someone who has never opened this
+repo.
 
-## Why it matters
-The concrete consequence — the bug that fires, the cost paid, the change this makes harder.
+**Why it matters.** The concrete consequence — the bug that fires, the cost paid, the change this
+makes harder.
 
-## Fix
-An instruction, not a description of one: name the files and symbols, state the behaviour that
-must hold afterwards, specific enough that two engineers would produce substantially the same
-diff. Describe the change; leave the code to whoever applies it.
+**Direction.** Which way the fix goes, in a sentence or two: the unit to route it through, the
+`reuse` unit that already covers it, the adjacent change it must stay consistent with. Not the edit.
 
-## Don't
-What must not change — public API, passing tests, unrelated files, formatting churn — and any
-adjacent temptation, naming the finding that covers it if one does.
-
-## Verify
-The exact `commands` that prove it and what passing looks like, plus any regression test that must
-exist, in the tier and location `tests` gives.
-
-## If the code doesn't match
-This finding was written against the state above. If what you find contradicts it, stop and report
-the contradiction rather than improvising around it.
+**Check first.** The one place that would make this fine, if anything does — the caller that may
+already validate, the guard, the type, the config. At low confidence: the one thing that would
+settle it.
 ````
 
-## Step 4 — Index last
-
-Write `code-00-index.md` in the same folder: scope, commit and date; exclusions and why; counts by
-severity and by category; the findings table in apply order; and the three to five systemic
-patterns worth fixing at the root rather than per instance — one that is itself actionable gets
-its own finding file, referenced here.
-
-The index is for me, not the fixer. **No finding file may depend on it**; each stands alone with
-the index absent.
-
-## Step 5 — Report
+## Step 4 — Report
 
 In chat, under 200 words: counts by severity, the three findings to fix first and why those,
 anything the scope left unreviewed, and any fact worth adding to `.claude/project.md`.
 
 ## Where this skill stops
 
-It writes findings; it doesn't decide what gets fixed.
+It writes findings; it doesn't decide what gets fixed, or how — that is `/craftstep:fix`'s call,
+made against the code as it is when the fix happens.

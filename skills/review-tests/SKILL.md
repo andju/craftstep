@@ -1,18 +1,18 @@
 ---
 name: review-tests
-description: Audit the tests for a scope I name and write one self-contained fix prompt per finding into the review folder. Never writes or repairs a test itself.
+description: Audit the tests for a scope I name and write the findings as one checklist document into the repo root, for /craftstep:fix to work through. Never writes or repairs a test itself.
 argument-hint: [what to review — e.g. the whole suite, tests/api, the auth flow, since main; blank asks]
-allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(mkdir:*), Write, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash(git:*), Write, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
 ---
 
 We are reviewing tests. Scope for this run (blank → step 1 settles it with me): $ARGUMENTS
 
-Every finding lands on disk as its own file, written for a fresh session that has no memory of
-this review and will be handed **one such file, or the whole folder, and nothing else**.
+The findings land on disk as one document, `test-findings.md`: read by me, and worked through one
+finding at a time by `/craftstep:fix`, in a later session that has no memory of this review.
 
-**This skill only writes inside `reviews` folder.** It never touches other files,
+**This skill writes one file: `test-findings.md` at the repo root.** It never touches other files,
 `.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording,
 propose it once you are done and let me apply it.
 
@@ -22,17 +22,17 @@ Resolve each fact independently; the first source that settles it wins:
 
 1. **The project's CLAUDE.md** — usually in context; read from disk if not (subagents, non-root
    packages in a monorepo).
-2. **`.claude/project.md`**, sections `reviews`, `commands`, `tests`, `reuse`. A missing file,
-   section or key are all normal.
+2. **`.claude/project.md`**, sections `commands`, `tests`, `reuse`. A missing file, section
+   or key are all normal.
 3. **The repo itself** — manifest, runner and coverage config, CI workflows, test layout.
 
 What each fact does here, and how to infer it at source 3:
 
-- **reviews** — where findings are written. Infer nothing; default `docs/code-review/`.
-- **tests** — the tiers, what belongs in each, file naming. Both the review set and where a missing
-  test goes. Infer from runner config, CI and language convention; confirm by globbing.
-- **commands** — how each tier is run; every finding names the command that proves its fix. You
-  never run them here. Infer from manifest scripts and CI.
+- **tests** — the tiers, what belongs in each, file naming. Both the review set and the tier a
+  missing test belongs in. Infer from runner config, CI and language convention; confirm by
+  globbing.
+- **commands** — how each tier is run, for the enforcement lens. You never run them here. Infer
+  from manifest scripts and CI.
 - **reuse** — shared units, including fixture, factory and helper directories. Duplicated setup is
   a finding only when a reusable unit exists. Infer from where tests import their helpers.
 
@@ -62,13 +62,14 @@ from the first, missing-test findings from the second. Turn $ARGUMENTS into both
 
 Also in scope unless I say otherwise: runner and coverage config, the CI workflows that run tests,
 shared fixtures and factories, any coverage report already in the tree. Out: generated, vendored
-and lockfile paths, and anything not readable as text. Print all of it before reading it — both
+and lockfile paths, the review documents `code-findings.md` and `test-findings.md`, and anything
+not readable as text. Print all of it before reading it — both
 halves, config, exclusions and why, and the commit or working-tree state under review. Above 150
 files, stop and offer to narrow; a suite you skimmed produces confident-sounding noise.
 
-**The folder holds one run at a time.** Before the read pass, check `reviews` for files under
-this run's `test-` prefix. Say what is there and wait while I clear it. This skill deletes nothing
-itself, and the other prefix is none of its business.
+**The repo root holds one run at a time.** Before the read pass, check the repo root
+(`git rev-parse --show-toplevel`) for a `test-findings.md`. If one is there, say so and wait while
+I clear it. This skill deletes nothing itself, and `code-findings.md` is none of its business.
 
 ## Step 2 — One pass, all lenses
 
@@ -111,8 +112,8 @@ file. Capture the line numbers and snippets you need at read time.
 Evidence: every finding cites `path:line` you actually read, snippet captured at read time — for a
 missing test, the code that lacks one. Never report on a file you didn't open, and never invent a
 test name, framework version or coverage number; what you can't confirm is written at low
-confidence with the one thing that would settle it. A clean scope produces no files, and saying so
-is correct — never pad the folder.
+confidence with the one thing that would settle it. A clean scope produces an empty checklist, and
+saying so is correct — never pad it.
 
 ## Step 3 — Ask only what the repo can't answer
 
@@ -120,19 +121,48 @@ Test intent often isn't in the tests. Ask me in one round — either/ors in one 
 open questions as plain text alongside — only where the answer changes a finding. Don't ask what
 the repo answers. If nothing is worth asking, skip this step.
 
-## Step 4 — Write one file per finding
+## Step 4 — Write the findings document
 
-Create the `reviews` folder if absent. Write each finding immediately as `test-NN.md` — `NN`
-zero-padded, numbered in the order fixes should be applied. An `approach` finding that changes a
-convention comes before the tests that would be written under it.
+Write `test-findings.md` at the repo root. Number the findings `NNN`, zero-padded, in
+the order fixes should be applied. An `approach` finding that changes a convention comes before
+the tests that would be written under it.
 
-One file is one fix. Merge findings that share a root cause, repeat one mechanical change across
+One finding is one fix. Merge findings that share a root cause, repeat one mechanical change across
 sites, or would leave the suite inconsistent if fixed apart; split anything that would touch
-unrelated files. **Two findings must never ask for conflicting edits to the same lines** — merge
-them, or state the dependency in `Apply`, since the whole folder may be handed over at once.
+unrelated files. **Two findings must never point opposite ways on the same lines** — merge them, or
+state the dependency in `Apply`.
+
+**Write what only this review knows, and stop there.** The fixer confirms each finding against the
+code and decides the change itself, against the suite as it is by then — earlier fixes will have
+moved it. What it can't get from the code is what this pass saw across the whole set: every site,
+how findings depend on each other, which scenarios matter and which way a fix should go. The test
+code, what it mustn't touch and the commands that prove it are the fixer's; don't write them.
+
+**The fixer reads one section, never the whole document.** Each finding stands alone: no section
+leans on another, or on the systemic patterns, except by number. The checklist is the fixer's to
+tick off — leave every box empty.
+
+A long document goes in parts: the header and checklist first, then the findings, appended in order.
 
 ````markdown
-# NN — <title>
+# Test review — <scope> · <commit, or working tree> · <date>
+
+Scope; exclusions and why; counts by severity and by category; any step 3 question I left
+unanswered.
+
+## Checklist
+
+- [ ] **001** · <severity> · <category> — <title>
+- [ ] **002** · <severity> · <category> · low confidence — <title>
+
+## Systemic patterns
+
+The three to five patterns worth fixing at the root rather than per instance. One that is itself
+actionable is a finding of its own, named here by number.
+
+## Findings
+
+### 001 — <title>
 
 - **Category:** approach | missing test | weak test | remove/replace
 - **Severity:** critical | high | medium | low
@@ -141,53 +171,30 @@ them, or state the dependency in `Apply`, since the whole folder may be handed o
 - **Sites:** `path:line`, `path:line-range` — for a missing test, the code that has none
 - **Apply:** independent | after NN | together with NN
 
-## What's wrong
-The suite as it stands today, quoted from it, for someone who has never opened this repo. For a
-missing test: the behaviour that ships with nothing watching it.
+**What's wrong.** The suite as it stands today, quoted from it, for someone who has never opened
+this repo. For a missing test: the behaviour that ships with nothing watching it.
 
-## Why it matters
-The concrete consequence — the bug that ships undetected, the flake that costs a rerun and the
-trust that goes with it, the refactor this makes unsafe.
+**Why it matters.** The concrete consequence — the bug that ships undetected, the flake that costs a
+rerun and the trust that goes with it, the refactor this makes unsafe.
 
-## Fix
-An instruction, not a description of one: the exact file to create or edit, in the tier and naming
-convention this repo uses; the runner it runs under; the fixtures, factories and helpers to reuse,
-by path; the scenarios to cover and the behaviour each must show. **Describe behaviour and
-expected outcome; leave the test code to whoever applies this**. Never weaken a test to make
-it pass.
+**Direction.** Which way the fix goes. For a missing test: the scenarios to cover and the behaviour
+each must show, and the fixtures, factories and helpers to build on, by path. Otherwise: what
+replaces what's there, and the tests it must stay consistent with. Not the test code.
 
-## Don't
-What must not change — production code, unrelated tests, the runner config, formatting churn — and
-any adjacent temptation, naming the finding that covers it if one does. Where the fix genuinely
-needs a seam in the production code, name that one seam and nothing past it.
-
-## Verify
-The exact `commands` for this tier and what passing looks like. For a new test, also what it must
-be seen to do before it counts: fail, for the stated reason, when the behaviour it guards is
-broken.
-
-## If the suite doesn't match
-This finding was written against the state above. If what you find contradicts it, stop and report
-the contradiction rather than improvising around it.
+**Check first.** The one place that would make this fine, if anything does — for a missing test, a
+test elsewhere in the tree that may already cover it; for determinism, a setup file the runner
+loads that may already fake time or seed randomness. At low confidence: the one thing that would
+settle it.
 ````
 
-## Step 5 — Index last
-
-Write `test-00-index.md` in the same folder: scope, commit and date; exclusions and why; counts by
-severity and by category; the findings table in apply order; the three to five systemic patterns
-worth fixing at the root rather than per instance — one that is itself actionable gets its own
-finding file, referenced here; and any step 3 question I left unanswered.
-
-The index is for me, not the fixer: **no finding file may depend on it** — each stands alone with
-the index absent.
-
-## Step 6 — Report
+## Step 5 — Report
 
 In chat, under 200 words: counts by severity and category, the three findings to fix first and why
 those, anything left unreviewed or dropped as infeasible, any fact worth adding to
-`.claude/project.md`, and confirmation that nothing outside the review folder was touched.
+`.claude/project.md`, and confirmation that nothing besides `test-findings.md` was touched.
 
 ## Where this skill stops
 
 It writes findings about tests; it doesn't write them, and it doesn't touch the code under them.
-A bug it turns up belongs to `/craftstep:review-code`.
+A bug it turns up belongs to `/craftstep:review-code`; how a finding gets fixed is
+`/craftstep:fix`'s call.
