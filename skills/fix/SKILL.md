@@ -11,13 +11,7 @@ We are fixing a finding from a review that `/craftstep:review-code` or `/craftst
 wrote. Finding for this run (blank → step 1 picks the next open one): $ARGUMENTS
 
 **The finding is a claim, not a fact.** It was written from one read of the code by a session that
-never checked it afterwards. Nothing in the code changes until step 2 has confirmed it. That check
-is yours, in this session, and is never delegated.
-
-**The fix is yours to decide, too.** The review says what's wrong, where, and which way a fix should
-go — not the edit. Step 3 turns that into a brief, against the code as it is now. Small fixes you
-apply yourself; anything larger goes to the `finding-fixer` subagent with your brief. Either way,
-step 4 proves the result — nobody's word counts, yours included.
+never checked it afterwards. Step 2 checks it — yours, in this session, and never delegated.
 
 **This skill edits code, and one line of the findings document per finding: its checklist entry.**
 It never edits anything else in that document, `.claude/project.md` or CLAUDE.md, and never commits.
@@ -44,17 +38,16 @@ What each fact does here, and how to infer it at source 3:
   Infer by globbing test locations and reading one existing test of the tier being written into —
   and only once step 3 knows this fix needs a test.
 
-Where two sources settle the same fact differently, the higher one wins. List the facts in one short
-block, each with the source that settled it; `tests`, when it waits for step 3, is listed there.
+List the facts in one short block, each with the source that settled it; `tests`, when it waits for
+step 3, is listed there.
 
 ## Step 1 — Pick the finding
 
-**Never read a findings document whole.** It may hold dozens of findings and you need one. Work it
-with greps and ranged reads:
+**Never read a findings document whole.** Work it with greps and ranged reads:
 
-- **The checklist** — one line per finding, `- [ ] **NN** · severity · category — title`. The open
+- **The checklist** — one line per finding, `- [ ] **NNN** · severity · category — title`. The open
   ones: `grep -n "^- \[ \]"`.
-- **A finding** — `grep -n "^### NN "`, then a ranged read from that line to the next `### `.
+- **A finding** — `grep -n "^### NNN "`, then a ranged read from that line to the next `### `.
 
 Step 5 marks the checklist; what each state means:
 
@@ -62,10 +55,11 @@ Step 5 marks the checklist; what each state means:
 |---|---|---|
 | `- [ ] …` | not worked yet | yes |
 | `- [x] … — fixed` | applied and verified, or found already gone | no — closed |
-| `- [x] … — not a defect: <path:line>` | refuted, by the code or by me | no — closed |
+| `- [x] … — not a defect: <path:line>` | refuted by the code | no — closed |
+| `- [x] … — not a defect: closed by you` | refuted by me | no — closed |
 | `- [ ] … — needs you: <question>` | waits on a decision of mine | no — open until I name it |
 
-- **Named** — `code-03`, `test-7`, or a bare `03` where only one document has an `03` (both have
+- **Named** — `code-003`, `test-7`, or a bare `003` where only one document has an `003` (both have
   one — ask which). Closed — say so and stop. A `needs you` I name again comes with my decision, in
   $ARGUMENTS or in answer to its question asked again. Its `Apply` waits on a finding that isn't
   fixed — say which, and ask whether to go ahead anyway.
@@ -73,10 +67,10 @@ Step 5 marks the checklist; what each state means:
   fixed. With both documents present, every `code-` finding comes before any `test-`, so tests are
   written against the code as fixed. Nothing left — say so, list each `needs you` with its
   question, and stop.
-- **`Apply: together with NN`** — one fix with NN: check both, brief both as one, tick both.
+- **`Apply: together with NNN`** — one fix with NNN: check both, brief both as one, tick both.
 
 No `code-findings.md` or `test-findings.md` at the repo root — say so and stop. A checklist
-line with no `### NN` section means the review didn't finish writing — say so and stop.
+line with no `### NNN` section means the review didn't finish writing — say so and stop.
 
 ## Step 2 — Check the finding before anything changes
 
@@ -99,7 +93,6 @@ this step closes or leaves open goes straight to step 5.
 
 ### Low-confidence findings
 
-The finding admits the code didn't settle it; its **Check first** names the one thing that would.
 **Never apply one on its word.** Settle it the cheapest way that actually settles it:
 
 - **From the code** — question 2, aimed at what **Check first** names.
@@ -111,7 +104,7 @@ The finding admits the code didn't settle it; its **Check first** names the one 
   finding's **Direction** says, close it, or leave it open. Open → `needs you`.
 
 **Never fix one defensively** — a guard "just in case", a try/catch around a path nobody showed can
-fail. That change, made on a guess, is what this section exists to prevent.
+fail.
 
 ## Step 3 — Decide the fix, then apply it
 
@@ -143,8 +136,8 @@ changes nothing; empty output means the tree is clean, so use `HEAD` — then
 `git status --porcelain`. Step 4 measures the fix against these, so my own uncommitted changes
 never count as part of it.
 
-**Small — apply it yourself:** one file, a handful of lines, `TEST FIRST: none`. A subagent would
-spend more starting up and re-reading than the edit costs. Follow the brief to the letter.
+**Small — apply it yourself:** one file, a handful of lines, `TEST FIRST: none`. Follow the brief to
+the letter.
 
 **Anything else — dispatch one `finding-fixer` subagent**, `run_in_background: false`, with the
 brief as its prompt, plus:
@@ -185,24 +178,15 @@ and quote the failure. Undoing them is my call.
 
 ## Step 5 — Tick it off
 
-Edit only the finding's checklist line, keeping its text and appending the outcome:
-
-- `- [x] **03** · … — fixed`
-- `- [x] **03** · … — not a defect: <the path:line that shows it>`, or `: closed by you`
-- `- [ ] **03** · … — needs you: <the question, in one line>`
-
-A `together with` pair gets both lines. A `needs you` line worked again has its suffix replaced.
+Edit only the finding's checklist line, keeping its text and appending the outcome in the form the
+step 1 table shows; a `needs you` question fits on one line. A `together with` pair gets both lines. A `needs you` line worked again has its suffix replaced.
 
 ## Step 6 — Report
 
 In chat, under 150 words: the finding and its outcome; for a fix, the files changed and the `VERIFY`
 outcome; for `not a defect`, the code that refuted it; for `needs you`, the question. Then what's
 next — re-run the checklist grep for the next open finding and how many remain — and any fact worth
-adding to `.claude/project.md`.
+adding to `.claude/project.md`. Anything else noticed along the way goes here too, unfixed, for a
+review to pick up.
 
-## Where this skill stops
-
-One finding per run, its `together with` partner aside. It doesn't run the project's full gate,
-doesn't commit, and in the findings document it only ever edits that finding's checklist line. It
-fixes what the finding is about and nothing past it — anything else it notices goes in the report,
-for a review to pick up.
+Then stop: one finding per run, its `together with` partner aside.

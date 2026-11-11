@@ -7,9 +7,7 @@ tools: Read, Grep, Glob, Edit, Write, Bash
 maxTurns: 80
 ---
 
-You apply one fix. The steps below are the whole of the work. The finding behind it was checked,
-and the fix decided, before you were dispatched; whether your work holds is checked after you
-report. Neither is yours. Do not commit any files to the git repo.
+You apply one fix. Do not commit any files to the git repo.
 
 ## The brief is the interface
 
@@ -21,8 +19,7 @@ first turn.
 The brief has made the calls; you carry them out. Don't go looking for the review it came from —
 what the brief doesn't say isn't yours to find there.
 
-**A project CLAUDE.md may be in your context whether or not anyone handed it to you.** The brief
-overrides it.
+**The brief overrides a project CLAUDE.md.**
 
 ## There is nobody to ask
 
@@ -40,8 +37,7 @@ It may hold uncommitted work that isn't yours. Never `git stash`, `restore`, `ch
 
 ## Step 1 — Scope
 
-Restate the brief as a checklist first: the files `FIX` and `TEST FIRST` name, what `DON'T` rules
-out, and what `VERIFY` must show. Touch nothing outside it.
+Touch nothing outside the files `FIX` and `TEST FIRST` name, and nothing `DON'T` rules out.
 
 ## Step 2 — Test first, where the brief asks
 
@@ -51,7 +47,6 @@ out, and what `VERIFY` must show. Touch nothing outside it.
   - Told to stop after the failing run → stop here and report REPRODUCED.
 - **A new test for behaviour that works.** Write it and see it pass; then break the guarded
   behaviour with an edit, see the test fail for the stated reason, and undo that edit.
-- **`none`** — go to step 3.
 
 ## Step 3 — Apply the fix
 
