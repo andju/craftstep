@@ -104,7 +104,7 @@ checklist, and saying so is the correct outcome — never pad it.
 
 ## Step 3 — Write the findings document
 
-Write `code-findings.md` at the repo root. Number the findings `NNN`, zero-padded, in
+Write `code-findings.md` at the repo root. Number the findings `NNN`, three digits zero-padded, in
 the order fixes should be applied.
 
 One finding is one fix. Merge findings that share a root cause, repeat one mechanical change across
@@ -146,7 +146,7 @@ actionable is a finding of its own, named here by number.
 - **Severity:** critical | high | medium | low
 - **Confidence:** high | medium | low
 - **Sites:** `path:line`, `path:line-range`
-- **Apply:** independent | after NN | together with NN
+- **Apply:** independent | after NNN | together with NNN
 
 **What's wrong.** The behaviour today, quoted from the code, for someone who has never opened this
 repo.

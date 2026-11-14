@@ -1,7 +1,7 @@
 ---
 name: fix
 description: Work one finding off a review's checklist — the one I name, or the next open one — by checking it against the code, deciding the fix, and ticking it off. Larger fixes go to a subagent.
-argument-hint: [finding — e.g. code-03, test-07; blank picks the next open one; add "ask" or "no-ask" to force or skip my confirmation]
+argument-hint: [finding — e.g. code-003, test-007; blank picks the next open one; add "ask" or "no-ask" to force or skip my confirmation]
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash, AskUserQuestion, Agent(finding-fixer), SendMessage
 disable-model-invocation: true
 user-invocable: true

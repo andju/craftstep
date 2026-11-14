@@ -201,7 +201,7 @@ Work the findings off one at a time — the one you name, or the next one still
 open:
 
 ```
-/craftstep:fix code-03
+/craftstep:fix code-003
 /craftstep:fix
 ```
 

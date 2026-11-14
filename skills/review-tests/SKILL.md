@@ -123,7 +123,7 @@ the repo answers. If nothing is worth asking, skip this step.
 
 ## Step 4 — Write the findings document
 
-Write `test-findings.md` at the repo root. Number the findings `NNN`, zero-padded, in
+Write `test-findings.md` at the repo root. Number the findings `NNN`, three digits zero-padded, in
 the order fixes should be applied. An `approach` finding that changes a convention comes before
 the tests that would be written under it.
 
@@ -169,7 +169,7 @@ actionable is a finding of its own, named here by number.
 - **Confidence:** high | medium | low
 - **Tier:** the tier from `tests` this belongs in
 - **Sites:** `path:line`, `path:line-range` — for a missing test, the code that has none
-- **Apply:** independent | after NN | together with NN
+- **Apply:** independent | after NNN | together with NNN
 
 **What's wrong.** The suite as it stands today, quoted from it, for someone who has never opened
 this repo. For a missing test: the behaviour that ships with nothing watching it.
