@@ -165,7 +165,8 @@ Pass nothing else — not the findings document, not the review. What comes back
 Never take "done" from the subagent's report, nor from your own edit:
 
 - **Read the fix's diff** — `git diff <baseline>`, plus the files new in `git status --porcelain`
-  since the baseline and any others the report lists. It touches what `FIX` and `TEST FIRST` name,
+  since the baseline and any others the report lists. A file already untracked at the baseline
+  shows in neither: read the edited region itself, by ranged read. It touches what `FIX` and `TEST FIRST` name,
   and nothing `DON'T` forbids.
 - **Run `VERIFY` yourself** and read the output — the brief's commands, not the project's full
   gate. For a new test of working behaviour, read the report's run with the behaviour broken

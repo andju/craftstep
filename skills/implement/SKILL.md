@@ -43,8 +43,7 @@ What each fact does here, who uses it, and how to infer it at source 3:
   documentation; the spec names the files the subagent touches, so this isn't dispatched.
   Infer from the docs directory; if none are, treat this as a project with no user docs.
 
-Where two sources settle the same fact differently, the higher one wins. List every fact in one short
-block, each with the source that settled it.
+List every fact in one short block, each with the source that settled it.
 
 **Then check the spec, before you dispatch.** These are preconditions of dispatching, not
 work items: failing one here is a stop in front of me rather than a wasted round-trip.

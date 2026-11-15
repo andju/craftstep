@@ -38,8 +38,7 @@ What each fact is, and how to infer it at source 3:
 - **commands** — how to run each test tier and how to verify a work item. Infer from the
   package manifest's scripts and the CI config.
 
-Where two sources settle the same fact differently, the higher one wins. List every fact in one short
-block, each with the source that settled it.
+List every fact in one short block, each with the source that settled it.
 
 ## Step 1 — Settle what is already decided, then the scope
 

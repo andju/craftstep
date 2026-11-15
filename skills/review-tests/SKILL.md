@@ -2,7 +2,7 @@
 name: review-tests
 description: Audit the tests for a scope I name and write the findings as one checklist document into the repo root, for /craftstep:fix to work through. Never writes or repairs a test itself.
 argument-hint: [what to review — e.g. the whole suite, tests/api, the auth flow, since main; blank asks]
-allowed-tools: Read, Grep, Glob, Bash(git:*), Write, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash(git:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
 ---
@@ -36,8 +36,7 @@ What each fact does here, and how to infer it at source 3:
 - **reuse** — shared units, including fixture, factory and helper directories. Duplicated setup is
   a finding only when a reusable unit exists. Infer from where tests import their helpers.
 
-Where two sources settle the same fact differently, the higher one wins. List every fact in one short
-block, each with the source that settled it.
+List every fact in one short block, each with the source that settled it.
 
 ## Step 1 — Settle the scope, then print the review set
 
@@ -51,7 +50,7 @@ from the first, missing-test findings from the second. Turn $ARGUMENTS into both
   tests by the `tests` patterns anywhere in the tree, co-located ones included, matching on the
   symbols they import. List what you landed on, and say the attribution is your guess, not mine.
 - **A range** ("since main", "this branch") — resolve the base against the repo's actual default
-  branch, then `git diff <base>...HEAD`, split into changed tests and changed code. Changed code
+  branch, then `git diff --stat <base>...HEAD`, split into changed tests and changed code. Changed code
   whose tests didn't move is the point of looking.
 - **The whole suite** — every file matching the `tests` patterns, wherever it sits; the covered
   half is what those tests import. That bounds the missing-test lenses to code some test already
@@ -64,8 +63,27 @@ Also in scope unless I say otherwise: runner and coverage config, the CI workflo
 shared fixtures and factories, any coverage report already in the tree. Out: generated, vendored
 and lockfile paths, the review documents `code-findings.md` and `test-findings.md`, and anything
 not readable as text. Print all of it before reading it — both
-halves, config, exclusions and why, and the commit or working-tree state under review. Above 150
-files, stop and offer to narrow; a suite you skimmed produces confident-sounding noise.
+halves, config, exclusions and why, and the commit or working-tree state under review.
+
+**Size the set before reading it — a file count doesn't bound it.** Count the lines the pass will
+read, both halves, with Grep in count mode on `^`: it gives current line counts for tracked and
+untracked files alike. In a range scope, a changed code file over about 400 lines counts only for
+its changed lines and their context. Print the total with a token estimate, at about 12
+tokens a line.
+
+**The budget protects my money, not the context window.** Everything read is paid for again on
+every later turn, so cost grows faster than the set does. Above about 8,000 lines, stop and ask me:
+narrow the scope, split it into several runs, or go ahead in full knowing the estimate. Never
+quietly skim instead — a suite you skimmed produces confident-sounding noise.
+
+**For a range scope the unit of review is the change, not the file.** Report only on tests the
+change added or modified, and on tests missing for the code it changed; a weakness already there in
+a test the change didn't touch is not a finding. A changed test file is read whole — whether a test
+is sound depends on setup elsewhere in its file — with `git diff -U0` on it, same base as the scope,
+to mark what changed. A changed code file up to about 400 lines is read the same way; a larger one
+is read as `git diff -W`, the change with its enclosing functions, plus a ranged read where a hunk
+needs more. A new file is read whole. Existing tests of the changed code that the change didn't
+touch are found by grep and read only as far as it takes to tell what they already cover.
 
 **The repo root holds one run at a time.** Before the read pass, check the repo root
 (`git rev-parse --show-toplevel`) for a `test-findings.md`. If one is there, say so and wait while
@@ -76,7 +94,9 @@ I clear it. This skill deletes nothing itself, and `code-findings.md` is none of
 Ground yourself first: read the runner config and the CI workflow that runs tests.
 
 Walk the set once, applying every lens per file rather than re-scanning per lens. Never re-read a
-file. Capture the line numbers and snippets you need at read time.
+whole file: capture the line numbers and snippets you need at read time. A grep, or a ranged read of
+a few dozen lines, to confirm or refute one specific finding is fine — it costs less than leaving
+the finding at low confidence for `/craftstep:fix` to settle.
 
 **Is what's there sound** — `approach`, `weak test`, `remove/replace`:
 
@@ -108,6 +128,8 @@ file. Capture the line numbers and snippets you need at read time.
    unicode, very large, duplicate, out-of-order).
 9. **Seams** — API and DB schemas, message formats, external clients: a contract untested, or
     asserted only against a stub this repo also wrote.
+
+**Read several files per turn.** Parallel reads in one turn cost less than a turn per file.
 
 Evidence: every finding cites `path:line` you actually read, snippet captured at read time — for a
 missing test, the code that lacks one. Never report on a file you didn't open, and never invent a
@@ -142,7 +164,8 @@ code, what it mustn't touch and the commands that prove it are the fixer's; don'
 leans on another, or on the systemic patterns, except by number. The checklist is the fixer's to
 tick off — leave every box empty.
 
-A long document goes in parts: the header and checklist first, then the findings, appended in order.
+A long document goes in parts: Write the header and checklist first, then append the findings in
+order with Edit.
 
 ````markdown
 # Test review — <scope> · <commit, or working tree> · <date>

@@ -2,7 +2,7 @@
 name: review-code
 description: Review a scope I name — uncommitted changes, a folder, a branch — and write the findings as one checklist document into the repo root, for /craftstep:fix to work through. Never fixes what it finds and excludes tests.
 argument-hint: [what to review — e.g. uncommitted changes, src/api, since main; blank asks]
-allowed-tools: Read, Grep, Glob, Bash(git:*), Write, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash(git:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
 ---
@@ -28,8 +28,8 @@ Resolve each fact independently; the first source that settles it wins:
 
 What each fact does here, and how to infer it at source 3:
 
-- **commands** — lint, formatter, types; their config is a standard step 2 enforces. Infer from
-  manifest scripts and CI.
+- **commands** — lint, formatter, types; their config sets the standards step 2 reviews against.
+  Infer from manifest scripts and CI.
 - **tests** — how to identify test files, that drop out of the review set wherever they sit: infer
   from the runner's config and the language's convention.
 - **docs** — which docs are user-facing, for findings about docs the code has outgrown. Infer from
@@ -37,17 +37,17 @@ What each fact does here, and how to infer it at source 3:
 - **reuse** — directories of shared units. Duplication is a finding only when something reusable
   already exists; check here. Infer from where shared code lives.
 
-Where two sources settle the same fact differently, the higher one wins. List every fact in one short
-block, each with the source that settled it.
+List every fact in one short block, each with the source that settled it.
 
 ## Step 1 — Settle the scope, then print the review set
 
 Turn $ARGUMENTS into an explicit file list *before* reading any of it:
 
 - **Working tree** ("uncommitted", "staged", "what I just wrote") — `git status --porcelain`, plus
-  `git diff` and `git diff --cached`.
+  `git diff --stat` and `git diff --cached --stat`.
 - **A range** ("since main", "this branch", "the last three commits") — resolve the base against
-  the repo's actual default branch, not an assumed `main`, then `git diff <base>...HEAD`.
+  the repo's actual default branch, not an assumed `main`, then `git diff --stat <base>...HEAD`.
+  For either diff scope this is the list and its size only; step 2 reads the diff itself, per file.
 - **A path** — glob it, directories included.
 - **A subsystem in prose** ("the auth flow") — grep its entry points, follow imports one level,
   list what you landed on, and say the boundary is your guess, not mine.
@@ -57,12 +57,23 @@ Turn $ARGUMENTS into an explicit file list *before* reading any of it:
 Remove **test files, matched by the `tests` patterns anywhere in the tree**, fixtures, test
 factories, mocks and snapshots. Out too: generated, vendored and lockfile paths, the review documents
 `code-findings.md` and `test-findings.md`, and anything not readable as text. Print the set
-before reading it: file count, exclusions and why, and the commit or working-tree state under
-review. Above 150 files, stop and offer to narrow rather than quietly doing
-a shallow pass.
+before reading it: file count, exclusions and why, and the commit or working-tree
+state under review.
 
-**For a diff scope the unit of review is the change, not the file.** Read whole files for context;
-report only what the change introduced or broke.
+**Size the set before reading it — a file count doesn't bound it.** Count the lines the pass will
+read with Grep in count mode on `^`: it gives current line counts for tracked and untracked files
+alike. In a diff scope, a file over about 400 lines counts only for its changed lines and their
+context. Print the total with a token estimate, at about 12 tokens a line.
+
+**The budget protects my money, not the context window.** Everything read is paid for again on
+every later turn, so cost grows faster than the set does. Above about 8,000 lines, stop and ask me:
+narrow the scope, split it into several runs, or go ahead in full knowing the estimate. Never
+quietly do a shallow pass instead.
+
+**For a diff scope the unit of review is the change, not the file.** Report only what the change
+introduced or broke. A file up to about 400 lines is read whole, with `git diff -U0` on it — same
+base as the scope — to mark what changed. A larger one is read as `git diff -W`, the change with
+its enclosing functions, plus a ranged read where a hunk needs more. A new file is read whole.
 
 **The repo root holds one run at a time.** Before the read pass, check the repo root
 (`git rev-parse --show-toplevel`) for a `code-findings.md`. If one is there, say so and wait while
@@ -70,12 +81,15 @@ I clear it. This skill deletes nothing itself, and `test-findings.md` is none of
 
 ## Step 2 — One pass, all lenses
 
-Ground yourself first: Read the lint, formatter and type config `commands` points at; a rule this
-project configured is a standard you enforce, inline suppressions included.
+Ground yourself first: Read the lint, formatter and type config `commands` points at, for the
+standards this project set. Don't hunt for violations the linter reports by itself; what it can't
+flag is an inline suppression, so judge whether each one is justified.
 
 Walk the set once, applying every lens per file rather than re-scanning per lens. Never re-read a
-file. Capture the line numbers and snippets you need at read time. Priority order, which is also
-how findings rank:
+whole file: capture the line numbers and snippets you need at read time. A grep, or a ranged read of
+a few dozen lines, to confirm or refute one specific finding is fine — it costs less than leaving
+the finding at low confidence for `/craftstep:fix` to settle. Priority order, which is also how
+findings rank:
 
 1. **Correctness** —  logic errors, wrong operators and boundaries, unhandled null, stale or
    shared-mutable state, unawaited or mis-sequenced async, races, swallowed exceptions, missing
@@ -94,8 +108,11 @@ how findings rank:
 5. **Architecture** — coupling that shouldn't exist, misuse of the framework's own conventions,
    business logic in a layer that shouldn't hold it.
 6. **Documentation and standards** — missing or wrong doc comments, user-facing docs (per `docs`)
-   the code has outgrown, violations of the language's accepted conventions, configured-rule
-   violations including suppressed ones.
+   the code has outgrown (grep the `docs` paths for the public names the scope changes or exposes,
+   and read only the hits), violations of the language's accepted conventions, inline
+   suppressions of a configured rule that aren't justified.
+
+**Read several files per turn.** Parallel reads in one turn cost less than a turn per file.
 
 Evidence: every finding cites `path:line` you actually read, snippet captured as you read it.
 Report nothing about a file you didn't open. A finding you can't confirm from the code is written
@@ -121,7 +138,8 @@ edit, what it mustn't touch and the commands that prove it are the fixer's; don'
 leans on another, or on the systemic patterns, except by number. The checklist is the fixer's to
 tick off — leave every box empty.
 
-A long document goes in parts: the header and checklist first, then the findings, appended in order.
+A long document goes in parts: Write the header and checklist first, then append the findings in
+order with Edit.
 
 ````markdown
 # Code review — <scope> · <commit, or working tree> · <date>
