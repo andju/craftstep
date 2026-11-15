@@ -20,9 +20,11 @@ If the run turns up a fact worth recording, propose it once you are done and let
 **The working tree may hold my uncommitted work** — often the very changes that were reviewed.
 Never `git stash`, `restore`, `checkout`, `reset` or `clean`; an edit is undone with another edit.
 
-## Step 0 — Load this project's conventions
+## Step 0 — This project's conventions, resolved when the brief needs them
 
-Resolve each fact independently; the first source that settles it wins:
+**Resolve nothing yet.** Steps 1 and 2 need no project fact: a run that finds no document, or
+closes its finding as already gone or not a defect, never resolves one. When step 3 writes the
+brief, resolve each fact independently; the first source that settles it wins:
 
 1. **The project's CLAUDE.md** — usually in context; read from disk if not (non-root packages in a
    monorepo).
@@ -30,16 +32,13 @@ Resolve each fact independently; the first source that settles it wins:
    normal.
 3. **The repo itself** — manifest scripts, CI, existing test layout.
 
-What each fact does here, and how to infer it at source 3:
+What each fact feeds, and how to infer it from the repo:
 
 - **commands** — lint, types, build, each test tier: the brief's `VERIFY`. Infer from manifest
   scripts and CI.
 - **tests** — where a file of each tier goes and what shape it takes: the brief's `TEST FIRST`.
   Infer by globbing test locations and reading one existing test of the tier being written into —
-  and only once step 3 knows this fix needs a test.
-
-List the facts in one short block, each with the source that settled it; `tests`, when it waits for
-step 3, is listed there.
+  and only when this fix needs a test.
 
 ## Step 1 — Pick the finding
 
@@ -108,8 +107,9 @@ fail.
 
 ## Step 3 — Decide the fix, then apply it
 
-**Write the brief** — against the code you just read, not the code the review saw — and show it in
-chat:
+**Resolve the step 0 facts now**, and list them in one short block, each with the source that
+settled it. Then **write the brief** — against the code you just read, not the code the review
+saw — and show it in chat:
 
 ```
 FINDING:    <id — title>, with its `together with` partner if any

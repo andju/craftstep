@@ -20,7 +20,11 @@ around it.
 
 ## Step 0 — Load this project's conventions, then check the spec is dispatchable
 
-Resolve each fact independently, taking the first source that settles it:
+**Settle `plans` first, and check the spec is there.** If nothing is at that path, stop and say
+so before resolving anything else. Don't write a spec yourself, and don't implement from my
+request alone.
+
+Then resolve each fact independently, taking the first source that settles it:
 
 1. **The project's CLAUDE.md.** Usually already in context; read it from disk if it
    isn't. Subagents and non-root packages in a monorepo don't always have it.
@@ -48,8 +52,6 @@ List every fact in one short block, each with the source that settled it.
 **Then check the spec, before you dispatch.** These are preconditions of dispatching, not
 work items: failing one here is a stop in front of me rather than a wasted round-trip.
 
-- If nothing is in the `plans` path, stop and say so. Don't write a spec yourself, and don't
-  implement from my request alone.
 - Confirm **$ARGUMENTS is covered by the spec.** Don't dispatch work the spec doesn't
   contain.
 - Read the **Acceptance criteria** and the **Work items** now, and note which items are
@@ -120,8 +122,9 @@ Yours to write:
 - Work items done, and any left.
 - Every acceptance criterion, with its evidence — or, where this run was partial, the
   outstanding items it waits on.
-- Commands run and their outcome, **quoting the gate output verbatim** rather than
-  summarizing it — failures included, and which criteria needed a second round.
+- Commands run and their outcome. **A failure is quoted verbatim** — the command, its exit
+  status, the failing lines — never summarized. A pass is the command and its own summary line
+  (`142 passed`), not its full output. And which criteria needed a second round.
 - Deviations: each one the subagent reported, next to the spec's own wording. A command the
   spec failed to name is one of them.
 - Anything blocked, and the decision from me that would unblock it.

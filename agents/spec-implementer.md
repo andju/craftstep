@@ -67,7 +67,7 @@ which, and start at the first unmarked one. Step 2 still applies.
 Before the first edit, confirm what the plan stands on, and report in one short
 block:
 
-- Every file, symbol, directory and dependency the **Work items** name — does it
+- Every file, symbol, directory and dependency the **Work items** in your scope name — does it
   exist, and does its interface still match what the spec assumes? Where an item names
   an existing unit to build on, does the extension it describes still fit?
 - The spots **When this plan is wrong** flags as least confident. That section was

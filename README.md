@@ -193,7 +193,9 @@ one by reading the document it produced — and each run reads its file set once
 applying every lens as it goes. `review-tests` spends half its pass on the tests
 that *aren't* there, which needs a model of the covered code rather than a scan
 of the suite. Neither review is expensive: a bounded set of files in, one short
-document out. **Recommended: Opus (code: xhigh, tests: xhigh–max).**
+document out. Each sizes its set before reading, prints a token estimate, and
+asks before going past about 8,000 lines.
+**Recommended: Opus (code: xhigh, tests: xhigh–max).**
 
 #### Fix
 

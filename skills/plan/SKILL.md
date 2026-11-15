@@ -2,7 +2,7 @@
 name: plan
 description: Plan a new feature — interview me, push back on what won't work, then write an implementation-ready spec. Writes the spec and stops; never implements.
 argument-hint: [short description of the feature]
-allowed-tools: Read, Grep, Glob, AskUserQuestion, Write
+allowed-tools: Read, Grep, Glob, AskUserQuestion, Write, Agent(Explore)
 disable-model-invocation: true
 user-invocable: true
 ---
@@ -81,6 +81,12 @@ Cover requirements, edge cases, and tradeoffs. Ask open questions as plain text;
 AskUserQuestion for genuine either/ors. Don't ask me to confirm what I've already told
 you — dig into the hard parts I might not have considered. Read enough of the codebase
 first that your questions are grounded in how this project actually works.
+
+**Locate before you read.** Grep and Glob first; read what they land on, by ranged read where a
+file is long. Where finding the area would take a sweep across many files or directories, hand
+the search to one `Explore` subagent: give it the question and ask for paths, symbols and line
+ranges back, not file contents. Then read what it located yourself — the spec has to be right
+about the code, and a subagent's summary is a pointer, not evidence.
 
 Ask in rounds, not one question at a time. A round is one turn: the either/ors go in a
 single AskUserQuestion call — it takes up to four — with any open questions as plain text
