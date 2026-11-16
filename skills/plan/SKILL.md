@@ -57,6 +57,13 @@ record I did point you at has already settled things this skill would otherwise 
 - Its risks describe operating the decision, not places the codebase might contradict this
   spec. They don't belong in **When this plan is wrong**.
 
+**A record whose status is `proposed` rests on an assumption nobody has tested.** Warn me before
+anything else: quote the assumption from its **Revisit if**, name the option that takes over if
+it fails, and say that a spec written now is built on it. Then ask me with AskUserQuestion, the
+assumption restated in the question itself: **stop** — so I can run `/craftstep:spike <record
+path>` and finish the record first — or **plan anyway**. If I plan anyway, the assumption goes
+under **When this plan is wrong**, in the record's words.
+
 **If I ask for a backlog entry** — `next`, or an entry's title: find it in the `backlog` file with
 a grep on `^## ` and a ranged read of that one entry; never read the backlog whole. `next` is the
 first entry whose **Depends on** is met. Nothing there — say so and stop.

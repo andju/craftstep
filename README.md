@@ -14,6 +14,7 @@ you invoke when you hit that step, not a one-size-fits-all agent.
 | Fix the findings, one per run | `/craftstep:fix [finding]` | the fix, ticked off in the checklist |
 | Close the feature out | `/craftstep:wrap-up` | deferred work in the backlog; commit message |
 | A bug — find the cause first | `/craftstep:diagnose <symptom>` | a finding for `/craftstep:fix` |
+| An open question blocks a decision | `/craftstep:spike <question>` | a spike report, `spike-<slug>.md` |
 
 Every step hands over through a file, not a context window, so each one can
 start in a fresh session. [How it works](#how-it-works) covers each
@@ -333,6 +334,47 @@ interview and one document, so there is little to save here and a lot to lose;
 where the choice is expensive to reverse, the most capable model's extra
 reasoning is worth the price on that few thousand tokens. **Recommended: Opus,
 or Fable for a one-way door (xhigh).**
+
+#### Spike
+
+Sometimes a decision hangs on a question only running code answers: is the
+library fast enough, does the API return what the option needs.
+
+```
+/craftstep:spike Can the PDF renderer handle 500-page documents under 2 seconds?
+```
+
+It agrees the question with you — and what result means yes, no or inconclusive
+— before writing anything, then builds the least that answers it in a separate
+git worktree, so your working tree is never touched. The result is a spike
+report, `spike-<slug>.md` at the repo root: the answer, the evidence, and what
+the spike doesn't show. The code is thrown away; anything worth keeping is
+rebuilt through `/craftstep:plan`. Point `/craftstep:design-solution` or
+`/craftstep:plan` at the report to use it.
+
+A design can take a second round the same way a spec can. When a
+recommendation rests on something nobody has tested, the record is written as
+`proposed` and names that assumption as a spike question. Spike it, then finish
+the record in a fresh session:
+
+```
+/craftstep:spike docs/architecture/decisions/0007-pdf-rendering.md
+/craftstep:design-solution docs/architecture/decisions/0007-pdf-rendering.md spike-pdf-render-speed.md
+```
+
+The second run doesn't interview again. The criteria agreed in the first round
+stay frozen — evidence may change which option wins, not what the options are
+judged on — and the same record is rewritten in place as `accepted`. An
+`accepted` record is never revised: reopening it is a new run and a new record.
+
+The report is a working document too — gitignore it, or delete it once the
+design or spec it fed is written. What has to last is carried into the decision
+record, which never links back to the report.
+
+**What it needs from a model: speed, and honesty about the result.** The code
+is disposable, so quality buys nothing; what matters is stopping at the answer
+and reporting *inconclusive* when that is what it is.
+**Recommended: Sonnet, or Opus (medium).**
 
 ## Project facts
 

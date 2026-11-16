@@ -63,8 +63,9 @@ Also in scope unless I say otherwise: runner and coverage config, the CI workflo
 shared fixtures and factories, and the summary or totals of any coverage report already in the
 tree — never a full `lcov`, JSON or HTML report. Out: generated, vendored
 and lockfile paths, the findings documents `bug-findings.md`, `code-findings.md` and `test-findings.md`,
-and anything not readable as text. Print all of it before reading it — both
-halves, config, total lines, exclusions and why, and the commit or working-tree state under review.
+spike reports (`spike-*.md` at the repo root), and anything not readable as text. Print all of it before
+reading it — both halves, config, total lines, exclusions and why, and the commit or working-tree state
+under review.
 
 **Size the set before reading it — a file count doesn't bound it.** Count the lines the pass will
 read, both halves, with Grep in count mode on `^`: it gives current line counts for tracked and
