@@ -35,7 +35,8 @@ What each fact does here, and how to infer it at source 3:
 - **docs** — which docs are user-facing, for findings about docs the code has outgrown. Infer from
   the docs directory; if none is user-facing, the project has no user docs.
 - **reuse** — directories of shared units. Duplication is a finding only when something reusable
-  already exists; check here. Infer from where shared code lives.
+  already exists — check here — or when both copies sit in the review set. Infer from where
+  shared code lives.
 
 List every fact in one short block, each with the source that settled it.
 
@@ -101,10 +102,14 @@ findings rank:
 3. **Security** — Not a security audit - consider only severe: unvalidated input, exposed or
    hardcoded secrets, an entry point missing an authorization check, path traversal, unsafe
    deserialization, permissive CORS.
-4. **Maintainability** — duplicated logic (e.g. where a `reuse` unit already covers it), dead
-   code, magic values, escape-hatch types (`any` and equivalents, unchecked casts), overly complex
-   components, poor separation of concerns, inconsistent patterns across similar files, units too
-   large or entangled to test.
+4. **Maintainability** — duplicated logic (a `reuse` unit already covers it, or both copies sit in
+   the review set), dead code, magic values, escape-hatch types (`any` and equivalents, unchecked
+   casts), needless complexity (nesting an early return would flatten, an abstraction, wrapper or
+   option with one use, hand-rolled code the stdlib or framework provides, handling for a state
+   that can't occur), names that mislead about what a unit does or holds, poor separation of
+   concerns, inconsistent patterns across similar files, units too large or entangled to test.
+   A simplicity or naming finding must name the simpler form in one sentence and preserve
+   behaviour; taste alone is not a finding. Never above medium severity.
 5. **Architecture** — coupling that shouldn't exist, misuse of the framework's own conventions,
    business logic in a layer that shouldn't hold it.
 6. **Documentation and standards** — missing or wrong doc comments, user-facing docs (per `docs`)
