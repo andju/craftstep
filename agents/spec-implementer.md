@@ -54,7 +54,8 @@ report. Say what the code showed, quote the spec's own wording beside it, and st
 
 Read it in full before touching anything, including the sections that read as context:
 **Rejected alternatives** and **Reuse** are routes already turned down — don't
-re-litigate them; **When this plan is wrong** is what Step 2 checks.
+re-litigate them; **Deferred** is work this spec excludes — build none of it; **When
+this plan is wrong** is what Step 2 checks.
 
 Your caller has already confirmed the spec exists and that your scope is covered by
 it. Implement nothing the spec doesn't contain.

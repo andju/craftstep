@@ -1,7 +1,7 @@
 ---
 name: implement
 description: Implement an agreed spec — one work item at a time, verifying each, stopping when the codebase contradicts the plan.
-argument-hint: [optional — which work items; blank implements all of it]
+argument-hint: "optional — which work items; blank implements all of it"
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, Agent(spec-implementer), SendMessage
 disable-model-invocation: true
 user-invocable: true
@@ -12,7 +12,8 @@ We are implementing a spec that `/craftstep:plan` wrote and I reviewed. Scope fo
 
 You are the orchestrator, running in my session, and **every step in this file is yours**.
 The implementation is not: the spec's work items, and the tests and docs that go with them,
-belong to the `spec-implementer` subagent. They are always delegated.
+belong to the `spec-implementer` subagent. They are always delegated. Nothing is committed
+unless I ask.
 
 **Stopping rule.** Anywhere below, "stop and ask" means: report what you found, ask me, and
 wait. Never improvise around it, re-scope an item to dodge it, or duplicate code to route
@@ -32,9 +33,9 @@ Then resolve each fact independently, taking the first source that settles it:
    file, a missing section, and a missing key are all normal.
 3. **The repo itself** — package manifest, CI config, existing test and docs layout.
 
-What each fact does here, who uses it, and how to infer it at source 3:
+What each fact does here, who uses it, and how to infer it from the repo:
 
-- **plans** — the file the spec lives in. Default to `SPEC.md` at the repo root.
+- **plans** — the file the spec lives in. Default to `.craftstep/spec.md`.
 - **commands** — each test tier plus the project's own gate: lint, types, build. **The gate
   is yours, at Step 2.** The spec names an exact command per work item and per test, so the
   tier commands go down only as a fallback for where it failed to. Infer from the package
@@ -128,15 +129,3 @@ Yours to write:
 - Deviations: each one the subagent reported, next to the spec's own wording. A command the
   spec failed to name is one of them.
 - Anything blocked, and the decision from me that would unblock it.
-
-## Where this skill stops
-
-This skill implements the spec. It does not re-plan one: a spec that turns out to be wrong
-goes back to `/craftstep:plan`, with the contradiction found. It doesn't reach past the work
-items, it changes nothing in the spec but the progress markers, and it doesn't commit unless
-I ask.
-
-It writes nothing to disk: the report is prose to me, and the spec's progress markers are the
-subagent's to set. It doesn't answer the subagent's questions from its own reading of the
-code, doesn't take the subagent's word for a passing gate, and doesn't run a third fix round
-— after two, the next move is mine.

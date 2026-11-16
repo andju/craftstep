@@ -1,7 +1,7 @@
 ---
 name: review-tests
-description: Audit the tests for a scope I name and write the findings as one checklist document into the repo root, for /craftstep:fix to work through. Never writes or repairs a test itself.
-argument-hint: [what to review — e.g. the whole suite, tests/api, the auth flow, since main; blank asks]
+description: Audit the tests for a scope I name and write the findings as one checklist document into `.craftstep/`, for /craftstep:fix to work through. Never writes or repairs a test itself.
+argument-hint: "what to review — e.g. the whole suite, tests/api, the auth flow, since main; blank asks"
 allowed-tools: Read, Grep, Glob, Bash(git:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
@@ -12,7 +12,7 @@ We are reviewing tests. Scope for this run (blank → step 1 settles it with me)
 The findings land on disk as one document, `test-findings.md`: read by me, and worked through one
 finding at a time by `/craftstep:fix`, in a later session that has no memory of this review.
 
-**This skill writes one file: `test-findings.md` at the repo root.** It never touches other files,
+**This skill writes one file: `.craftstep/test-findings.md`.** It never touches other files,
 `.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording,
 propose it once you are done and let me apply it.
 
@@ -26,7 +26,7 @@ Resolve each fact independently; the first source that settles it wins:
    or key are all normal.
 3. **The repo itself** — manifest, runner and coverage config, CI workflows, test layout.
 
-What each fact does here, and how to infer it at source 3:
+What each fact does here, and how to infer it from the repo:
 
 - **tests** — the tiers, what belongs in each, file naming. Both the review set and the tier a
   missing test belongs in. Infer from runner config, CI and language convention; confirm by
@@ -62,9 +62,10 @@ from the first, missing-test findings from the second. Turn $ARGUMENTS into both
 Also in scope unless I say otherwise: runner and coverage config, the CI workflows that run tests,
 shared fixtures and factories, and the summary or totals of any coverage report already in the
 tree — never a full `lcov`, JSON or HTML report. Out: generated, vendored
-and lockfile paths, the findings documents `code-findings.md` and `test-findings.md`, and anything
-not readable as text. Print all of it before reading it — both
-halves, config, total lines, exclusions and why, and the commit or working-tree state under review.
+and lockfile paths, everything under `.craftstep/` (specs, the backlog, findings documents, spike
+reports), and anything not readable as text. Print all of it before
+reading it — both halves, config, total lines, exclusions and why, and the commit or working-tree state
+under review.
 
 **Size the set before reading it — a file count doesn't bound it.** Count the lines the pass will
 read, both halves, with Grep in count mode on `^`: it gives current line counts for tracked and
@@ -86,7 +87,7 @@ is read as `git diff -W`, the change with its enclosing functions, plus a ranged
 needs more. A new file is read whole. Existing tests of the changed code that the change didn't
 touch are found by grep and read only as far as it takes to tell what they already cover.
 
-**The repo root holds one run at a time.** Before the read pass, check the repo root
+**`.craftstep/` holds one run at a time.** Before the read pass, check `.craftstep/` at the repo root
 (`git rev-parse --show-toplevel`) for a `test-findings.md`. If one is there, say so and wait while
 I clear it. This skill deletes nothing itself, and `code-findings.md` is none of its business.
 
@@ -136,7 +137,8 @@ Evidence: every finding cites `path:line` you actually read, snippet captured at
 missing test, the code that lacks one. Never report on a file you didn't open, and never invent a
 test name, framework version or coverage number; what you can't confirm is written at low
 confidence with the one thing that would settle it. A clean scope produces an empty checklist, and
-saying so is correct — never pad it.
+saying so is correct — never pad it. A bug turned up in the code under test belongs to
+`/craftstep:review-code`.
 
 ## Step 3 — Ask only what the repo can't answer
 
@@ -146,7 +148,7 @@ the repo answers. If nothing is worth asking, skip this step.
 
 ## Step 4 — Write the findings document
 
-Write `test-findings.md` at the repo root. Number the findings `NNN`, three digits zero-padded, in
+Write `.craftstep/test-findings.md`. Number the findings `NNN`, three digits zero-padded, in
 the order fixes should be applied. An `approach` finding that changes a convention comes before
 the tests that would be written under it.
 
@@ -214,11 +216,6 @@ settle it.
 ## Step 5 — Report
 
 In chat, under 200 words: counts by severity and category, the three findings to fix first and why
-those, anything left unreviewed or dropped as infeasible, any fact worth adding to
-`.claude/project.md`, and confirmation that nothing besides `test-findings.md` was touched.
-
-## Where this skill stops
-
-It writes findings about tests; it doesn't write them, and it doesn't touch the code under them.
-A bug it turns up belongs to `/craftstep:review-code`; how a finding gets fixed is
-`/craftstep:fix`'s call.
+those, anything left unreviewed or dropped as infeasible, any fact in
+`.claude/project.md` or CLAUDE.md worth adding, changing or removing — one this run found missing,
+wrong or out of date — and confirmation that nothing besides `test-findings.md` was touched.

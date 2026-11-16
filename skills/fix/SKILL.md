@@ -1,14 +1,15 @@
 ---
 name: fix
 description: Work one finding off a review's checklist — the one I name, or the next open one — by checking it against the code, deciding the fix, and ticking it off. Larger fixes go to a subagent.
-argument-hint: [finding — e.g. code-003, test-007; blank picks the next open one; add "ask" or "no-ask" to force or skip my confirmation]
+argument-hint: "finding — e.g. code-003, test-007; blank picks the next open one; add "ask" or "no-ask" to force or skip my confirmation"
 allowed-tools: Read, Grep, Glob, Edit, Write, Bash, AskUserQuestion, Agent(finding-fixer), SendMessage
 disable-model-invocation: true
 user-invocable: true
 ---
 
 We are fixing a finding from a review that `/craftstep:review-code` or `/craftstep:review-tests`
-wrote. Finding for this run (blank → step 1 picks the next open one): $ARGUMENTS
+wrote, or a bug that `/craftstep:diagnose` diagnosed. Finding for this run (blank → step 1 picks the
+next open one): $ARGUMENTS
 
 **The finding is a claim, not a fact.** It was written from one read of the code by a session that
 never checked it afterwards. Step 2 checks it — yours, in this session, and never delegated.
@@ -58,18 +59,19 @@ Step 5 marks the checklist; what each state means:
 | `- [x] … — not a defect: closed by you` | refuted by me | no — closed |
 | `- [ ] … — needs you: <question>` | waits on a decision of mine | no — open until I name it |
 
-- **Named** — `code-003`, `test-7`, or a bare `003` where only one document has an `003` (both have
+- **Named** — `code-003`, `test-7`, `bug-001`, or a bare `003` where only one document has an `003` (both have
   one — ask which). Closed — say so and stop. A `needs you` I name again comes with my decision, in
-  $ARGUMENTS or in answer to its question asked again. Its `Apply` waits on a finding that isn't
-  fixed — say which, and ask whether to go ahead anyway.
-- **Blank** — the first unmarked open line whose finding's `Apply` doesn't wait on one that isn't
-  fixed. With both documents present, every `code-` finding comes before any `test-`, so tests are
-  written against the code as fixed. Nothing left — say so, list each `needs you` with its
+  $ARGUMENTS or in answer to its question asked again. Its `Apply` waits on a finding that is
+  still open — say which, and ask whether to go ahead anyway.
+- **Blank** — the first unmarked open line whose finding's `Apply` doesn't wait on one that is
+  still open; a closed one, `not a defect` included, no longer blocks. With several documents present, every `bug-` finding comes first, then every `code-`, then
+  `test-`, so tests are written against the code as fixed. Nothing left — say so, list each `needs you` with its
   question, and stop.
 - **`Apply: together with NNN`** — one fix with NNN: check both, brief both as one, tick both.
 
-No `code-findings.md` or `test-findings.md` at the repo root — say so and stop. A checklist
-line with no `### NNN` section means the review didn't finish writing — say so and stop.
+The findings documents live in `.craftstep/` at the repo root. No `bug-findings.md`,
+`code-findings.md` or `test-findings.md` there — say so and stop. A checklist line
+with no `### NNN` section means the review didn't finish writing — say so and stop.
 
 ## Step 2 — Check the finding before anything changes
 

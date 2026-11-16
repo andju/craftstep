@@ -1,7 +1,7 @@
 ---
 name: setup
 description: Set up `.claude/project.md` for this repo — work out each section from the repo, show the evidence, and write only the sections I accept. Never edits CLAUDE.md and never writes code.
-argument-hint: [optional — which sections to (re)do, e.g. commands tests; blank does all seven]
+argument-hint: "optional — which sections to (re)do, e.g. commands tests; blank does all seven"
 allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(mkdir:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
@@ -42,12 +42,20 @@ Then read, in this order, and let each one shrink the work:
 ## Step 1 — Work out each section from the repo
 
 Every proposal cites its evidence: a file path, a manifest script name, a CI job. Where you
-find no evidence, the proposal is the documented default (`plans`, `decisions`) or
+find no evidence, the proposal is the documented default (`plans`, `backlog`, `decisions`) or
 "leave unset" (`commands`, `tests`, `docs`, `reuse`) — never a plausible-looking guess.
 **Don't run any command you find**, and don't create anything to make a path exist.
 
-- **plans** — the single file specs get written to. Look for an existing `SPEC.md`, a specs
-  folder, or a spec path named in CLAUDE.md or `.gitignore`. Default `SPEC.md` at the root.
+- **plans** — the single file specs get written to. Look for an existing `SPEC.md` at the
+  root, a specs folder, or a spec path named in CLAUDE.md or `.gitignore`. Default
+  `.craftstep/spec.md`.
+  The section holds one more optional fact, `After wrap-up:` — what `/craftstep:wrap-up` does with
+  the spec once the feature is closed out: `delete`, `leave`, or `move to <folder>`. Propose
+  `move to <folder>` only where the repo already keeps finished specs in one; otherwise the
+  default, `delete`, stands and the line is omitted.
+- **backlog** — the single file deferred work is parked in: written by `/craftstep:wrap-up`, read
+  by `/craftstep:plan`. Look for an existing `BACKLOG.md` at the root. Default
+  `.craftstep/backlog.md`.
 - **decisions** — where design and decision records live. Glob for `adr`, `decisions`,
   `rfc`, `docs/architecture`. Default `docs/architecture/decisions/`.
 - **commands** — how to run tests, lint, build, typecheck. Take them from the package manifest
@@ -72,7 +80,7 @@ Print two things, in this order:
 
 1. **One line per section**: the proposed value, where it came from, whether you read it or
    inferred it, and whether it just matches the documented default.
-2. **The file as it would land**, in schema order (`plans`, `decisions`, `commands`, `tests`,
+2. **The file as it would land**, in schema order (`plans`, `backlog`, `decisions`, `commands`, `tests`,
    `docs`, `reuse`), so I'm accepting real text rather than a description of it.
 
 The draft is file content, not part of your message: print it **inside a single fenced block,
@@ -111,6 +119,8 @@ covers. Never ask about a section CLAUDE.md settles or the existing file already
 `mkdir -p .claude` if needed, then write the accepted sections in schema order:
 
 - A single path → inline code on its own line.
+- `plans`, when I accepted an `After wrap-up:` value → that line below the path, after a blank
+  line: `After wrap-up: move to` and the folder in inline code, or `After wrap-up: leave`.
 - `commands` → one `bash` fence, one command per line, trailing `#` comment naming each.
 - `tests`, `docs`, `reuse` → bullets, each naming the path and what belongs there.
 - An HTML comment only where a value would puzzle someone a year from now. Don't annotate the
@@ -122,11 +132,11 @@ this run come out byte-identical — same wording, same comments, same order.
 **Accepting nothing is a valid outcome.** If CLAUDE.md covers everything and the rest are
 defaults, don't create the file; say so and stop.
 
-## Where this skill stops
+## Step 5 — Report
 
 Report the path written, which sections landed, and which were skipped and why (covered by
 CLAUDE.md, matched the default, declined). Name any command recorded but never run, so I know
 what's unproven.
 
 If the run turned up a fact that belongs in CLAUDE.md rather than here — something every
-session should have in context — propose the wording for me to apply. Don't apply it yourself.
+session should have in context — propose the wording for me to apply.

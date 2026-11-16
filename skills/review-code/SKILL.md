@@ -1,7 +1,7 @@
 ---
 name: review-code
-description: Review a scope I name — uncommitted changes, a folder, a branch — and write the findings as one checklist document into the repo root, for /craftstep:fix to work through. Never fixes what it finds and excludes tests.
-argument-hint: [what to review — e.g. uncommitted changes, src/api, since main; blank asks]
+description: Review a scope I name — uncommitted changes, a folder, a branch — and write the findings as one checklist document into `.craftstep/`, for /craftstep:fix to work through. Never fixes what it finds and excludes tests.
+argument-hint: "what to review — e.g. uncommitted changes, src/api, since main; blank asks"
 allowed-tools: Read, Grep, Glob, Bash(git:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
@@ -12,7 +12,7 @@ We are reviewing code. Scope for this run (blank → step 1 settles it with me):
 The findings land on disk as one document, `code-findings.md`: read by me, and worked through one
 finding at a time by `/craftstep:fix`, in a later session that has no memory of this review.
 
-**This skill writes one file: `code-findings.md` at the repo root.** It never touches other files,
+**This skill writes one file: `.craftstep/code-findings.md`.** It never touches other files,
 `.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording,
 propose it once you are done and let me apply it.
 
@@ -26,7 +26,7 @@ Resolve each fact independently; the first source that settles it wins:
    section or key are all normal.
 3. **The repo itself** — manifest, CI, lint/formatter/type config, test and docs layout.
 
-What each fact does here, and how to infer it at source 3:
+What each fact does here, and how to infer it from the repo:
 
 - **commands** — lint, formatter, types; their config sets the standards step 2 reviews against.
   Infer from manifest scripts and CI.
@@ -35,7 +35,8 @@ What each fact does here, and how to infer it at source 3:
 - **docs** — which docs are user-facing, for findings about docs the code has outgrown. Infer from
   the docs directory; if none is user-facing, the project has no user docs.
 - **reuse** — directories of shared units. Duplication is a finding only when something reusable
-  already exists; check here. Infer from where shared code lives.
+  already exists — check here — or when both copies sit in the review set. Infer from where
+  shared code lives.
 
 List every fact in one short block, each with the source that settled it.
 
@@ -55,10 +56,9 @@ Turn $ARGUMENTS into an explicit file list *before* reading any of it:
   file count so the choice is grounded.
 
 Remove **test files, matched by the `tests` patterns anywhere in the tree**, fixtures, test
-factories, mocks and snapshots. Out too: generated, vendored and lockfile paths, the findings documents
-`code-findings.md` and `test-findings.md`, and anything not readable as text. Print
-the set before reading it: file count, total lines, exclusions and why, and the commit or working-tree
-state under review.
+factories, mocks and snapshots. Out too: generated, vendored and lockfile paths, everything under
+`.craftstep/`, and anything not readable as text. Print the set before reading it: file count,
+total lines, exclusions and why, and the commit or working-tree state under review.
 
 **Size the set before reading it — a file count doesn't bound it.** Count the lines the pass will
 read with Grep in count mode on `^`: it gives current line counts for tracked and untracked files
@@ -75,7 +75,7 @@ introduced or broke. A file up to about 400 lines is read whole, with `git diff 
 base as the scope — to mark what changed. A larger one is read as `git diff -W`, the change with
 its enclosing functions, plus a ranged read where a hunk needs more. A new file is read whole.
 
-**The repo root holds one run at a time.** Before the read pass, check the repo root
+**`.craftstep/` holds one run at a time.** Before the read pass, check `.craftstep/` at the repo root
 (`git rev-parse --show-toplevel`) for a `code-findings.md`. If one is there, say so and wait while
 I clear it. This skill deletes nothing itself, and `test-findings.md` is none of its business.
 
@@ -101,10 +101,14 @@ findings rank:
 3. **Security** — Not a security audit - consider only severe: unvalidated input, exposed or
    hardcoded secrets, an entry point missing an authorization check, path traversal, unsafe
    deserialization, permissive CORS.
-4. **Maintainability** — duplicated logic (e.g. where a `reuse` unit already covers it), dead
-   code, magic values, escape-hatch types (`any` and equivalents, unchecked casts), overly complex
-   components, poor separation of concerns, inconsistent patterns across similar files, units too
-   large or entangled to test.
+4. **Maintainability** — duplicated logic (a `reuse` unit already covers it, or both copies sit in
+   the review set), dead code, magic values, escape-hatch types (`any` and equivalents, unchecked
+   casts), needless complexity (nesting an early return would flatten, an abstraction, wrapper or
+   option with one use, hand-rolled code the stdlib or framework provides, handling for a state
+   that can't occur), names that mislead about what a unit does or holds, poor separation of
+   concerns, inconsistent patterns across similar files, units too large or entangled to test.
+   A simplicity or naming finding must name the simpler form in one sentence and preserve
+   behaviour; taste alone is not a finding. Never above medium severity.
 5. **Architecture** — coupling that shouldn't exist, misuse of the framework's own conventions,
    business logic in a layer that shouldn't hold it.
 6. **Documentation and standards** — missing or wrong doc comments, user-facing docs (per `docs`)
@@ -121,7 +125,7 @@ checklist, and saying so is the correct outcome — never pad it.
 
 ## Step 3 — Write the findings document
 
-Write `code-findings.md` at the repo root. Number the findings `NNN`, three digits zero-padded, in
+Write `.craftstep/code-findings.md`. Number the findings `NNN`, three digits zero-padded, in
 the order fixes should be applied.
 
 One finding is one fix. Merge findings that share a root cause, repeat one mechanical change across
@@ -183,9 +187,5 @@ settle it.
 ## Step 4 — Report
 
 In chat, under 200 words: counts by severity, the three findings to fix first and why those,
-anything the scope left unreviewed, and any fact worth adding to `.claude/project.md`.
-
-## Where this skill stops
-
-It writes findings; it doesn't decide what gets fixed, or how — that is `/craftstep:fix`'s call,
-made against the code as it is when the fix happens.
+anything the scope left unreviewed, and any fact in `.claude/project.md` or CLAUDE.md worth
+adding, changing or removing — one this run found missing, wrong or out of date.
