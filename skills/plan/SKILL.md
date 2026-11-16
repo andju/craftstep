@@ -1,7 +1,7 @@
 ---
 name: plan
 description: Plan a new feature — interview me, push back on what won't work, then write an implementation-ready spec. Writes the spec and stops; never implements.
-argument-hint: [short description of the feature]
+argument-hint: [short description of the feature, or next for the first backlog entry]
 allowed-tools: Read, Grep, Glob, AskUserQuestion, Write, Agent(Explore)
 disable-model-invocation: true
 user-invocable: true
@@ -21,13 +21,15 @@ settles it:
 
 1. **The project's CLAUDE.md.** Usually already in context; read it from disk if it
    isn't. Subagents and non-root packages in a monorepo don't always have it.
-2. **`.claude/project.md`**, sections `plans`, `commands`, `tests`, `docs`, `reuse`.
+2. **`.claude/project.md`**, sections `plans`, `backlog`, `commands`, `tests`, `docs`, `reuse`.
    A missing file, a missing section, and a missing key are all normal.
 3. **The repo itself** — package manifest, CI config, existing test and docs layout.
 
 What each fact is, and how to infer it from the repo:
 
 - **plans** — the file the spec gets written to. Default to `SPEC.md` at the repo root.
+- **backlog** — the file deferred slices are parked in. Read only when I ask for an entry;
+  never written here. Default to `BACKLOG.md` at the repo root.
 - **tests** — the tiers that exist here and what belongs in each. Infer by globbing for
   test locations and per-language test file patterns, reading one or two existing tests
   from each tier, and checking the CI config for how they're run.
@@ -55,10 +57,21 @@ record I did point you at has already settled things this skill would otherwise 
 - Its risks describe operating the decision, not places the codebase might contradict this
   spec. They don't belong in **When this plan is wrong**.
 
+**If I ask for a backlog entry** — `next`, or an entry's title: find it in the `backlog` file with
+a grep on `^## ` and a ranged read of that one entry; never read the backlog whole. `next` is the
+first entry whose **Depends on** is met. Nothing there — say so and stop.
+
+- The entry is the request. What it records as settled is not a question.
+- It was written against the code as it was then: check what it assumes against the code as it is
+  now before relying on it.
+- Read the decision record it names, and treat it as above.
+- Leave the backlog file alone. Name the entry under **Feature** as `Backlog entry: <title>`;
+  `/craftstep:wrap-up` removes it once the feature is done.
+
 **Settle the size.** Whatever you're working from can cover more than one feature. If what
 you're holding needs more than one spec, say so now: propose the split as an ordered list
-of slices, name the one this run specs, and record the rest under **Feature** as what this spec
-deliberately excludes. Interview about that slice only.
+of slices, name the one this run specs, and record the rest under **Deferred**. Interview about
+that slice only.
 
 **Once you know which feature this run specs, check the `plans` path.** The spec is a working
 document holding one feature at a time, so anything already there is either an earlier pass at
@@ -70,7 +83,8 @@ this feature or a leftover from a finished one. Read its **Feature** section and
   **Rejected alternatives** forward into the rewrite — drop an entry only if the revision
   explicitly revives that option, and then say so under **Approach**.
 - **A different feature.** Name the feature it holds and confirm with me before overwriting
-  it.
+  it. If it has **Deferred** slices, say that overwriting loses them unless
+  `/craftstep:wrap-up` has already moved them to the backlog.
 
 This step still ends by naming the scope: say in one line what this run specs, and what it
 leaves out.
@@ -100,7 +114,8 @@ Two or three rounds settle a normal feature. That count is a diagnostic, not a b
 never stop asking because you've hit it, and never guess to stay under it. If a fourth
 round is starting, something structural is off. Name which before you continue:
 
-- This is several features. Propose the split; spec one slice now and list the rest.
+- This is several features. Propose the split; spec one slice now and put the rest under
+  **Deferred**.
 - You're asking around an unsettled decision upstream of the questions. Name it and settle
   only that.
 - You're asking things the repo answers. Go read it instead — see the grounding rule above.
@@ -126,8 +141,8 @@ still undecided when you reach this step, go back to step 2 and settle it.
 Use these headings:
 
 - **Feature** — what we're building and the requirements, in enough detail that someone
-  who wasn't in the interview can tell whether the result is right. If step 1 split a
-  larger scope, name the slices this spec deliberately excludes.
+  who wasn't in the interview can tell whether the result is right. A spec planned from
+  a backlog entry names it here: `Backlog entry: <title>`.
 - **Approach** — the chosen implementation route. Where a decision record settled it, cite
   the record and cover only what the record left to this level.
 - **Rejected alternatives** — each option raised and dropped, with the reason, including
@@ -152,6 +167,11 @@ Use these headings:
 - **Reuse** — the units from the `reuse` directories you checked and did *not* build
   on, and what didn't fit about each. If everything you checked fits, say that instead
   of leaving the section empty.
+- **Deferred** — every slice cut from this spec, at any step, that is still meant to be built,
+  in the order it should be built. Per slice: a title, what it covers, the requirements the
+  interview already settled, what it depends on, and why it was cut. `/craftstep:wrap-up` moves
+  these to the backlog and a later run plans from them, so each stands alone without the rest of
+  this spec. The implementer builds none of it. If nothing was cut, say so.
 - **When this plan is wrong** — name the specific places you're least confident the
   codebase matches the plan, then state the rule: if reality contradicts this spec, stop
   and report the contradiction rather than improvising around it. Only take uncertainty

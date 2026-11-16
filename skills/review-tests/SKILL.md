@@ -215,5 +215,6 @@ settle it.
 ## Step 5 — Report
 
 In chat, under 200 words: counts by severity and category, the three findings to fix first and why
-those, anything left unreviewed or dropped as infeasible, any fact worth adding to
-`.claude/project.md`, and confirmation that nothing besides `test-findings.md` was touched.
+those, anything left unreviewed or dropped as infeasible, any fact in
+`.claude/project.md` or CLAUDE.md worth adding, changing or removing — one this run found missing,
+wrong or out of date — and confirmation that nothing besides `test-findings.md` was touched.

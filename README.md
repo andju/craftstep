@@ -12,6 +12,7 @@ you invoke when you hit that step, not a one-size-fits-all agent.
 | Build it, in a fresh session | `/craftstep:implement` | code gated and checked against the spec |
 | Review the result — either, both or neither | `/craftstep:review-code <scope>`<br>`/craftstep:review-tests <scope>` | a checklist of findings |
 | Fix the findings, one per run | `/craftstep:fix [finding]` | the fix, ticked off in the checklist |
+| Close the feature out | `/craftstep:wrap-up` | deferred work in the backlog; commit message |
 | A bug — find the cause first | `/craftstep:diagnose <symptom>` | a finding for `/craftstep:fix` |
 
 Every step hands over through a file, not a context window, so each one can
@@ -131,8 +132,14 @@ to add comments.
 
 The spec is a working document — keep it on the feature branch, or gitignore
 it. What happens to the file, once the feature is implemented, is your call:
-leave it, delete it, or move it to an archive folder. No skill here cleans it
-up.
+delete it, leave it, or move it to an archive folder —
+[`/craftstep:wrap-up`](#wrap-up) asks, and acts only on your answer. It
+recommends deleting unless `After wrap-up:` under [`plans`](#projectmd) records
+another choice for the repo.
+
+Scope cut during planning isn't lost: the spec lists each slice it leaves out
+under **Deferred**, and wrap-up moves them to the backlog for a later
+`/craftstep:plan next`.
 
 #### Implement
 
@@ -240,6 +247,40 @@ the test first where the brief asks for one, makes the edit and runs the
 checks; the session re-runs them rather than taking its word, and allows it one
 round back. **Recommended: Opus (high) for the session.**
 
+#### Wrap up
+
+When the feature is done, close it out:
+
+```
+/craftstep:wrap-up
+```
+
+It does three things, in an order that matters because the last one may delete
+the spec. First it parks what the spec deferred: every slice under the spec's
+**Deferred** heading — and any work item you decide not to finish now — becomes
+an entry in the backlog (`BACKLOG.md` unless `backlog` says otherwise), complete
+enough to plan from once the spec is gone. If the feature itself came from a
+backlog entry, that entry is removed. Then it drafts a commit message from the
+spec, in chat; it never commits. Last, it asks what to do with the spec — delete
+it, leave it, or move it to an archive folder — recommending what `plans`
+records under `After wrap-up:`, or deletion when nothing is recorded. The spec
+is the only file it will remove. Findings documents are outside its scope: it neither
+reports on them nor deletes them.
+
+To pick the next slice up, in a fresh session:
+
+```
+/craftstep:plan next
+```
+
+`next` is the first backlog entry whose dependencies are met; an entry's title
+works too. The entry stands in for the feature description, and what it records
+as settled isn't asked again.
+
+**What it needs from a model: diligence, not judgement.** It carries text from
+one file to another and summarizes a spec; nothing in it is a call the spec
+hasn't already made. **Recommended: Sonnet.**
+
 ### Bug — find the cause first
 
 Something is broken and you don't know why. A fix written before the cause is
@@ -328,8 +369,21 @@ back to inferring from the repo and say which facts were inferred:
 
 `SPEC.md`
 
+After wrap-up: move to `docs/specs/archive/`
+
 <!-- A single file: skills work one spec at a time.
-     Defaults to `SPEC.md` at the repo root when unset. -->
+     Defaults to `SPEC.md` at the repo root when unset.
+     `After wrap-up:` is what `/craftstep:wrap-up` recommends doing with the
+     spec once the feature is closed out: `delete`, `leave`, or
+     `move to <folder>`. It still asks first. Defaults to `delete` when unset. -->
+
+## backlog
+
+`BACKLOG.md`
+
+<!-- A single file: work agreed but not yet specified. Written by
+     `/craftstep:wrap-up`, read by `/craftstep:plan next`.
+     Defaults to `BACKLOG.md` at the repo root when unset. -->
 
 ## decisions
 
@@ -379,7 +433,7 @@ craftstep is one of several attempts to bring discipline to AI-assisted developm
 
 [mattpocock-skills](https://github.com/mattpocock/skills) starts from the same complaint — frameworks that own the process take away your control — and answers it with small, composable skills: get grilled about a plan, turn it into a spec, split that into tracer-bullet tickets, implement, review the diff against your standards and the spec. It carries a discipline of its own: implementation drives red-green-refactor TDD at agreed seams, a `GLOSSARY.md` and ADRs keep one domain language, and specs and tickets go to your issue tracker — GitHub, GitLab or a local folder. You type the skills that orchestrate; the ones that hold the discipline, TDD and code review among them, the agent can also reach for on its own.
 
-> craftstep shares the stance but not the discipline: no skill fires on its own, none asks for test-first or a glossary, and there is no tracker to configure — each step leaves a plain file in your working tree. It is also narrower: the steps of one change, from decision to review, with nothing around them for triage, debugging or handoffs.
+> craftstep shares the stance but not the discipline: no skill fires on its own, none asks for test-first or a glossary, and there is no tracker to configure — each step leaves a plain file in your working tree. It is also narrower: the steps of one change, from decision to wrap-up, with nothing around them for triage or handoffs.
 
 [OpenSpec](https://github.com/Fission-AI/OpenSpec) makes the same first move — agree on a spec before any code is written — and then keeps the spec. Each change gets a folder with a proposal, a design, a task list and spec deltas (requirements with WHEN/THEN scenarios); `/opsx:apply` works through the tasks, and archiving the change merges its deltas into `openspec/specs/`, a living description of what the system does. An npm CLI installs its slash commands into 30+ AI assistants, and it is built for existing codebases as much as new ones.
 

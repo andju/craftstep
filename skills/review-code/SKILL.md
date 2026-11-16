@@ -188,4 +188,5 @@ settle it.
 ## Step 4 — Report
 
 In chat, under 200 words: counts by severity, the three findings to fix first and why those,
-anything the scope left unreviewed, and any fact worth adding to `.claude/project.md`.
+anything the scope left unreviewed, and any fact in `.claude/project.md` or CLAUDE.md worth
+adding, changing or removing — one this run found missing, wrong or out of date.

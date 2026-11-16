@@ -42,12 +42,18 @@ Then read, in this order, and let each one shrink the work:
 ## Step 1 — Work out each section from the repo
 
 Every proposal cites its evidence: a file path, a manifest script name, a CI job. Where you
-find no evidence, the proposal is the documented default (`plans`, `decisions`) or
+find no evidence, the proposal is the documented default (`plans`, `backlog`, `decisions`) or
 "leave unset" (`commands`, `tests`, `docs`, `reuse`) — never a plausible-looking guess.
 **Don't run any command you find**, and don't create anything to make a path exist.
 
 - **plans** — the single file specs get written to. Look for an existing `SPEC.md`, a specs
   folder, or a spec path named in CLAUDE.md or `.gitignore`. Default `SPEC.md` at the root.
+  The section holds one more optional fact, `After wrap-up:` — what `/craftstep:wrap-up` does with
+  the spec once the feature is closed out: `delete`, `leave`, or `move to <folder>`. Propose
+  `move to <folder>` only where the repo already keeps finished specs in one; otherwise the
+  default, `delete`, stands and the line is omitted.
+- **backlog** — the single file deferred work is parked in: written by `/craftstep:wrap-up`, read
+  by `/craftstep:plan`. Look for an existing `BACKLOG.md`. Default `BACKLOG.md` at the root.
 - **decisions** — where design and decision records live. Glob for `adr`, `decisions`,
   `rfc`, `docs/architecture`. Default `docs/architecture/decisions/`.
 - **commands** — how to run tests, lint, build, typecheck. Take them from the package manifest
@@ -72,7 +78,7 @@ Print two things, in this order:
 
 1. **One line per section**: the proposed value, where it came from, whether you read it or
    inferred it, and whether it just matches the documented default.
-2. **The file as it would land**, in schema order (`plans`, `decisions`, `commands`, `tests`,
+2. **The file as it would land**, in schema order (`plans`, `backlog`, `decisions`, `commands`, `tests`,
    `docs`, `reuse`), so I'm accepting real text rather than a description of it.
 
 The draft is file content, not part of your message: print it **inside a single fenced block,
@@ -111,6 +117,8 @@ covers. Never ask about a section CLAUDE.md settles or the existing file already
 `mkdir -p .claude` if needed, then write the accepted sections in schema order:
 
 - A single path → inline code on its own line.
+- `plans`, when I accepted an `After wrap-up:` value → that line below the path, after a blank
+  line: `After wrap-up: move to` and the folder in inline code, or `After wrap-up: leave`.
 - `commands` → one `bash` fence, one command per line, trailing `#` comment naming each.
 - `tests`, `docs`, `reuse` → bullets, each naming the path and what belongs there.
 - An HTML comment only where a value would puzzle someone a year from now. Don't annotate the
