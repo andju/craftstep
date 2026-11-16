@@ -25,7 +25,7 @@ settles it:
    A missing file, a missing section, and a missing key are all normal.
 3. **The repo itself** — package manifest, CI config, existing test and docs layout.
 
-What each fact is, and how to infer it at source 3:
+What each fact is, and how to infer it from the repo:
 
 - **plans** — the file the spec gets written to. Default to `SPEC.md` at the repo root.
 - **tests** — the tiers that exist here and what belongs in each. Infer by globbing for
@@ -157,7 +157,4 @@ Use these headings:
   and report the contradiction rather than improvising around it. Only take uncertainty
   about the codebase, not decisions nobody made.
 
-## Where this skill stops
-
-This skill writes exactly one file: the spec, at the `plans` path. It does not implement the
-feature. Summarize the spec here and wait for my review.
+Summarize the spec here and wait for my review.

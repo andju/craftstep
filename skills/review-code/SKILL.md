@@ -26,7 +26,7 @@ Resolve each fact independently; the first source that settles it wins:
    section or key are all normal.
 3. **The repo itself** — manifest, CI, lint/formatter/type config, test and docs layout.
 
-What each fact does here, and how to infer it at source 3:
+What each fact does here, and how to infer it from the repo:
 
 - **commands** — lint, formatter, types; their config sets the standards step 2 reviews against.
   Infer from manifest scripts and CI.
@@ -189,8 +189,3 @@ settle it.
 
 In chat, under 200 words: counts by severity, the three findings to fix first and why those,
 anything the scope left unreviewed, and any fact worth adding to `.claude/project.md`.
-
-## Where this skill stops
-
-It writes findings; it doesn't decide what gets fixed, or how — that is `/craftstep:fix`'s call,
-made against the code as it is when the fix happens.

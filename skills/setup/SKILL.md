@@ -122,11 +122,11 @@ this run come out byte-identical — same wording, same comments, same order.
 **Accepting nothing is a valid outcome.** If CLAUDE.md covers everything and the rest are
 defaults, don't create the file; say so and stop.
 
-## Where this skill stops
+## Step 5 — Report
 
 Report the path written, which sections landed, and which were skipped and why (covered by
 CLAUDE.md, matched the default, declined). Name any command recorded but never run, so I know
 what's unproven.
 
 If the run turned up a fact that belongs in CLAUDE.md rather than here — something every
-session should have in context — propose the wording for me to apply. Don't apply it yourself.
+session should have in context — propose the wording for me to apply.

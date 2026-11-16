@@ -35,7 +35,7 @@ settles it:
    a missing section, and a missing key are all normal.
 3. **The repo itself** — package manifest, CI config, existing docs and test layout.
 
-What each fact does here, and how to infer it at source 3:
+What each fact does here, and how to infer it from the repo:
 
 - **decisions** — where records are read from and the new one is written. Infer from an existing
   record convention wherever it sits; default to `docs/architecture/decisions/`.
@@ -182,7 +182,4 @@ The record is what `/craftstep:plan` reads when I point it at one, so it has to 
 The record carries no open questions, no TODOs and no two options left side by side. Anything still
 undecided sends you back to the step that decides it.
 
-## Where this skill stops
-
-This skill writes one decision record. It doesn't write a spec and it doesn't implement. Summarize
-the record here and wait for my review.
+Summarize the record here and wait for my review.

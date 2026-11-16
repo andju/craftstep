@@ -26,7 +26,7 @@ Resolve each fact independently; the first source that settles it wins:
    or key are all normal.
 3. **The repo itself** — manifest, runner and coverage config, CI workflows, test layout.
 
-What each fact does here, and how to infer it at source 3:
+What each fact does here, and how to infer it from the repo:
 
 - **tests** — the tiers, what belongs in each, file naming. Both the review set and the tier a
   missing test belongs in. Infer from runner config, CI and language convention; confirm by
@@ -136,7 +136,8 @@ Evidence: every finding cites `path:line` you actually read, snippet captured at
 missing test, the code that lacks one. Never report on a file you didn't open, and never invent a
 test name, framework version or coverage number; what you can't confirm is written at low
 confidence with the one thing that would settle it. A clean scope produces an empty checklist, and
-saying so is correct — never pad it.
+saying so is correct — never pad it. A bug turned up in the code under test belongs to
+`/craftstep:review-code`.
 
 ## Step 3 — Ask only what the repo can't answer
 
@@ -216,9 +217,3 @@ settle it.
 In chat, under 200 words: counts by severity and category, the three findings to fix first and why
 those, anything left unreviewed or dropped as infeasible, any fact worth adding to
 `.claude/project.md`, and confirmation that nothing besides `test-findings.md` was touched.
-
-## Where this skill stops
-
-It writes findings about tests; it doesn't write them, and it doesn't touch the code under them.
-A bug it turns up belongs to `/craftstep:review-code`; how a finding gets fixed is
-`/craftstep:fix`'s call.
