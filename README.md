@@ -14,11 +14,11 @@ you invoke when you hit that step, not a one-size-fits-all agent.
 | Fix the findings, one per run | `/craftstep:fix [finding]` | the fix, ticked off in the checklist |
 | Close the feature out | `/craftstep:wrap-up` | deferred work in the backlog; commit message |
 | A bug — find the cause first | `/craftstep:diagnose <symptom>` | a finding for `/craftstep:fix` |
-| An open question blocks a decision | `/craftstep:spike <question>` | a spike report, `spike-<slug>.md` |
+| An open question blocks a decision | `/craftstep:spike <question>` | a spike report |
 
 Every step hands over through a file, not a context window, so each one can
-start in a fresh session. Those files are grouped in one folder, `.craftstep/`
-at the repo root — all but the decision records, which belong with your docs.
+start in a fresh session. Those files are grouped in one folder,
+[`.craftstep/`](#the-craftstep-folder) at the repo root.
 [How it works](#how-it-works) covers each step and what it needs from a model.
 
 The goal is to keep the developer in control of the process, with room to
@@ -41,13 +41,6 @@ Add the marketplace and install the plugin:
 ```
 /plugin marketplace add andju/craftstep
 /plugin install craftstep@craftstep
-```
-
-The same works from your shell:
-
-```
-claude plugin marketplace add andju/craftstep
-claude plugin install craftstep@craftstep
 ```
 
 To update, run `/plugin marketplace update craftstep`.
@@ -75,9 +68,14 @@ matches the documented default is recommended for omission. So a repo might end 
 with a short file or none at all. Re-run it later and it adds what's missing, leaving
 the sections you already have untouched.
 
-**What it needs from a model: speed, not judgement.** It reads the repo, proposes,
-and writes one short file — every value passes your acceptance before it lands, so
-a wrong guess costs a keystroke. **Recommended: Haiku.**
+<details>
+  <summary>Recommended model: Haiku</summary>
+  
+  What it needs from a model: speed, not judgement.
+  
+  It reads the repo, proposes, and writes one short file — every value passes
+  your acceptance before it lands, so a wrong guess costs a keystroke.
+</details>
 
 ### The `.craftstep/` folder
 
@@ -134,10 +132,8 @@ The everyday tier: the approach is obvious, but the scope isn't. Big enough
 that you want to agree on what's being built before it's built, and want a
 second pass over the result.
 
-Optionally, start by cutting a feature branch. Nothing in craftstep requires
-one, but the spec and the review findings are files that land in your working
-tree, and a branch keeps them — along with the half-finished code — off `main`
-until you're happy with all three.
+Optionally, start on a feature branch: it keeps the spec, the review findings
+and the half-finished code off `main` until you're happy with all three.
 
 #### Plan
 
@@ -151,12 +147,17 @@ It interviews you to clarify open points and writes an implementation-ready
 spec. This is the cheapest point at which to change your mind: a wrong assumption
 caught in the spec costs a sentence, the same one caught later costs a rewrite.
 
-**What it needs from a model: completeness, and the nerve to push back.** The
-spec is executed literally by the next step, so it has to be right about the
-codebase and complete enough that nothing is left to decide later — and the
-interview has to push back where the plan won't work. Those two degrade before
-anything else does on a smaller model, and a spec that hedges still reads fine.
-**Recommended: Opus (xhigh).**
+<details>
+  <summary>Recommended model: Opus (xhigh)</summary>
+  
+  What it needs from a model: completeness, and the nerve to push back.
+  
+  The spec is executed literally by the next step, so it has to be right about
+  the codebase and complete enough that nothing is left to decide later — and
+  the interview has to push back where the plan won't work. Those two degrade
+  before anything else does on a smaller model, and a spec that hedges still
+  reads fine.
+</details>
 
 #### Review the spec
 
@@ -166,21 +167,9 @@ review your comments. If you are using Visual Studio Code, I recommend the exten
 [Markdown Pro](https://marketplace.visualstudio.com/items?itemName=AmartyaKhan.markdown-pro-commenter)
 to add comments.
 
-The spec is a working document — keep it on the feature branch, or
-[gitignore it](#the-craftstep-folder). What happens to the file, once the
-feature is implemented, is your call: delete it, leave it, or move it to an
-archive folder — [`/craftstep:wrap-up`](#wrap-up) asks, and acts only on your
-answer. It recommends deleting unless `After wrap-up:` under
-[`plans`](#projectmd) records another choice for the repo.
-
-Scope cut during planning isn't lost: the spec lists each slice it leaves out
-under **Deferred**, and wrap-up moves them to the backlog for a later
-`/craftstep:plan next`.
-
 #### Implement
 
-Open a new Claude Code Session to get a fresh context window and start the
-implementation:
+Start the implementation in a fresh session:
 
 ```
 /craftstep:implement
@@ -189,28 +178,19 @@ implementation:
 It will implement the spec, working one item at a time and verify each before
 starting the next. Where the codebase contradicts the spec it stops and asks.
 
-**What it needs from a model: scepticism on top, diligence underneath.** The
-step splits itself across two models: `/craftstep:implement` runs on your
-session's model and delegates the work items to a subagent on a cheaper,
-mid-tier one (the `sonnet` alias, set in
-[spec-implementer.md](agents/spec-implementer.md)). The session's model resolves
-the project facts once, clears the spec for dispatch and hands down only what
-the spec itself can't state — the subagent reads the rest from the spec — then
-runs the full gate itself, proves every acceptance criterion, and owns the fix
-loop — at most two rounds, each one re-run and re-checked rather than taken on
-the subagent's word. The subagent does the editing, which asks for diligence
-more than judgement: the spec has already made the calls. The checking is where
-judgement goes. **Recommended: Opus (high–xhigh) for the session.**
+<details>
+  <summary>Recommended model: Opus (high–xhigh) for the session</summary>
 
-What the split buys is cost, and a check by a model that didn't write the code.
-Implementation is the token-heaviest step of the lifecycle, so it is where a
-cheaper model saves the most. And the session's model proves the result without
-having made the choices behind it, so it has no reasoning of its own to take
-for evidence. The same distance is what the split costs: it judges the result
-from the working tree and from re-running the commands itself, not from having
-watched the work happen — so a subagent that routed around an obstacle instead
-of reporting it gets caught by the gate and the acceptance criteria, or not at
-all.
+  What it needs from a model: scepticism on top, diligence underneath.
+
+  The step splits across two models. Your session's model clears the spec for
+  dispatch, then runs the full gate and proves every acceptance criterion
+  itself; the work items go to a subagent on a cheaper, mid-tier model (the
+  `sonnet` alias, set in [spec-implementer.md](agents/spec-implementer.md)),
+  with at most two fix rounds. Implementation is the token-heaviest step, so
+  that is where a cheaper model saves the most — and the result is checked by a
+  model that didn't write it.
+</details>
 
 #### Validate and fix
 
@@ -219,27 +199,29 @@ different commands for code and tests:
 
 ```
 /craftstep:review-code uncommitted changes
-/craftstep:review-tests
+/craftstep:review-tests uncommitted changes
 ```
 
-Each review writes one document into `.craftstep/` —
-`code-findings.md` or `test-findings.md`: a checklist on top, then for each
-finding what's wrong, where, and which way the fix should go. Not the fix
-itself: `/craftstep:fix` decides that, one finding at a time, against the code
-as it is by then — see [Fix](#fix).
+Each review writes one document into `.craftstep/`: a checklist on top, then
+for each finding what's wrong, where, and which way the fix should go. Not the
+fix itself — [`/craftstep:fix`](#fix) decides that.
 
 The two reviews are independent; run either, both, or neither. Skipping
 `review-tests` on a change with no test surface is normal.
 
-**What it needs from a model: thoroughness you can't check afterwards.** A
-missed finding leaves no trace — you can't tell a thorough review from a shallow
-one by reading the document it produced — and each run reads its file set once,
-applying every lens as it goes. `review-tests` spends half its pass on the tests
-that *aren't* there, which needs a model of the covered code rather than a scan
-of the suite. Neither review is expensive: a bounded set of files in, one short
-document out. Each sizes its set before reading, prints a token estimate, and
-asks before going past about 8,000 lines.
-**Recommended: Opus (code: xhigh, tests: xhigh–max).**
+<details>
+  <summary>Recommended model: Opus (code: xhigh, tests: xhigh–max)</summary>
+
+  What it needs from a model: thoroughness you can't check afterwards.
+
+  A missed finding leaves no trace — you can't tell a thorough review from a
+  shallow one by reading the document it produced — and each run reads its file
+  set once, applying every lens as it goes. `review-tests` spends half its pass
+  on the tests that *aren't* there, which needs a model of the covered code
+  rather than a scan of the suite. Neither review is expensive: a bounded set of
+  files in, one short document out. Each sizes its set before reading, prints a
+  token estimate, and asks before going past about 8,000 lines.
+</details>
 
 #### Fix
 
@@ -247,41 +229,35 @@ Work the findings off one at a time — the one you name, or the next one still
 open:
 
 ```
-/craftstep:fix code-003
 /craftstep:fix
 ```
 
-A finding is a claim from one read of the code, never checked since, so each
-run starts by checking it: the cited code still says what the finding quotes,
-and the place the finding says would make it fine — the caller that already
-validates, the test that already covers it — doesn't. A low-confidence finding
-is never applied on its word: it is settled from the code, by a regression test
-that has to fail first, or by asking you.
+Each run starts by checking the finding against the code as it is now — it is
+a claim from one read, and earlier fixes may have moved things. A
+low-confidence finding is never applied on its word: it is settled from the
+code, by a regression test that has to fail first, or by asking you.
 
-Only then does it decide the fix, against the code as it is by then — earlier
-fixes may have moved it — and write it up as a short brief. Where the brief
-decides something the finding's direction left open — a public name, an
-error-handling policy, behaviour a caller can see — it shows you the brief and
-asks first; mechanical fixes go ahead, since the diff is yours to read before
-you commit. Add `ask` or `no-ask` to force or skip that question.
+Mechanical fixes go ahead, since the diff is yours to read before you commit.
+Where a fix decides something the finding left open — a public name, an
+error-handling policy, behaviour a caller can see — it asks first. Add `ask`
+or `no-ask` to force or skip that question.
 
 Each run ticks its finding off in the checklist — fixed, not a defect, or left
-open because it needs you — so a blank run always knows which one is next. It
-reads nothing of the document but the checklist and its own finding, however
-long the review was. One finding per run; clear the session between runs
-(`/clear`), since a review's worth of fixes in one context pays for every
-earlier one again on every turn.
+open because it needs you. One finding per run, each in a fresh session, since
+a review's worth of fixes in one context pays for every earlier one again on
+every turn.
 
-**What it needs from a model: doubt before the edit, judgement in the brief,
-diligence in the edit.** Like `/craftstep:implement`, the step splits across two
-models. Your session's model does the checking and makes the calls — whether
-the finding is real, what the fix is, whether the diff and the checks hold —
-and applies the smallest fixes itself, where starting a subagent would cost
-more than the edit. Anything larger goes, as the brief, to a subagent on the
-`sonnet` alias (set in [finding-fixer.md](agents/finding-fixer.md)), which writes
-the test first where the brief asks for one, makes the edit and runs the
-checks; the session re-runs them rather than taking its word, and allows it one
-round back. **Recommended: Opus (high) for the session.**
+<details>
+  <summary>Recommended model: Opus (high) for the session</summary>
+
+  What it needs from a model: doubt before the edit, judgement in the fix,
+  diligence in the edit.
+
+  The same split as [Implement](#implement): your session's model checks the
+  finding, decides the fix and applies the smallest ones itself; anything larger
+  goes to a subagent on the `sonnet` alias (set in
+  [finding-fixer.md](agents/finding-fixer.md)), whose checks the session re-runs.
+</details>
 
 #### Wrap up
 
@@ -292,30 +268,42 @@ When the feature is done, close it out:
 ```
 
 It does three things, in an order that matters because the last one may delete
-the spec. First it parks what the spec deferred: every slice under the spec's
-**Deferred** heading — and any work item you decide not to finish now — becomes
-an entry in the backlog (`.craftstep/backlog.md` unless `backlog` says otherwise),
-complete enough to plan from once the spec is gone. If the feature itself came
-from a backlog entry, that entry is removed. Then it drafts a commit message from
-the spec, in chat; it never commits. Last, it asks what to do with the spec — delete
-it, leave it, or move it to an archive folder — recommending what `plans` records
-under `After wrap-up:`, or deletion when nothing is recorded. The spec is the only
-file it will remove. Findings documents are outside its scope: it neither reports
-on them nor deletes them.
+the spec:
 
-To pick the next slice up, in a fresh session:
+1. **Parks what the spec deferred.** Every slice under the spec's **Deferred**
+   heading — and any work item you decide not to finish now — becomes an entry
+   in the backlog, complete enough to plan from once the spec is gone. If the
+   feature itself came from a backlog entry, that entry is removed.
+2. **Drafts a commit message** from the spec, in chat; it never commits.
+3. **Asks what to do with the spec** — delete it, leave it, or move it to an
+   archive folder — recommending what `plans` records under `After wrap-up:`,
+   or deletion when nothing is recorded.
+
+The spec is the only file it will remove. Findings documents are outside its
+scope: it neither reports on them nor deletes them.
+
+<details>
+  <summary>Recommended model: Sonnet</summary>
+
+  What it needs from a model: diligence, not judgement.
+
+  It carries text from one file to another and summarizes a spec; nothing in it
+  is a call the spec hasn't already made.
+</details>
+
+### Backlog — pick up where the last feature stopped
+
+Wrap-up parks every slice a feature deferred in the backlog. To plan the next
+one, start a fresh session:
 
 ```
 /craftstep:plan next
 ```
 
-`next` is the first backlog entry whose dependencies are met; an entry's title
-works too. The entry stands in for the feature description, and what it records
-as settled isn't asked again.
-
-**What it needs from a model: diligence, not judgement.** It carries text from
-one file to another and summarizes a spec; nothing in it is a call the spec
-hasn't already made. **Recommended: Sonnet.**
+`next` takes the first entry whose dependencies are met; give an entry's title
+instead to pick that one. The entry stands in for the feature description, so
+what it records as settled isn't asked again. From there the
+[feature tier](#feature) runs unchanged, starting at [Plan](#plan).
 
 ### Bug — find the cause first
 
@@ -334,9 +322,13 @@ direction of the fix, which `/craftstep:fix bug-001` then works off like any
 review finding. A cause it couldn't confirm is written at low confidence, so
 the fixer settles it with a failing test before changing anything.
 
-**What it needs from a model: the discipline to check before believing.** The
-failure mode is a plausible cause accepted without a test of it.
-**Recommended: Opus (high–xhigh).**
+<details>
+  <summary>Recommended model: Opus (high–xhigh)</summary>
+
+  What it needs from a model: the discipline to check before believing.
+
+  The failure mode is a plausible cause accepted without a test of it.
+</details>
 
 ### Complex feature — design the solution first
 
@@ -351,24 +343,23 @@ to justify a year from now.
 
 It interviews you, agrees the criteria *before* weighing anything, puts
 genuinely different options against them, and recommends one — writing a
-decision record under `decisions`. Run `craftstep:plan` (in a separate session)
+decision record under `decisions`. Run `craftstep:plan` (in a fresh session)
 next, and use the record as input. From there the feature tier runs unchanged.
 
-Running this skill on a change that has one obvious implementation wastes an
-interview to rediscover that; the cost of skipping it when you shouldn't have
-is a design decision made implicitly, inside a spec, with no record of what
-lost.
+<details>
+  <summary>Recommended model: Opus, or Fable for a one-way door (xhigh)</summary>
 
-**What it needs from a model: judgement nothing will check, and restraint.**
-Nothing downstream checks a decision record: a weak one doesn't fail a test, it
-quietly misdirects every spec written after it. The step also asks for
-self-restraint — hold three or four genuinely different options at their
-strongest, and recommend none of them before the criteria are agreed — which is
-what a smaller model drops first, leaving one idea at three sizes. It costs an
-interview and one document, so there is little to save here and a lot to lose;
-where the choice is expensive to reverse, the most capable model's extra
-reasoning is worth the price on that few thousand tokens. **Recommended: Opus,
-or Fable for a one-way door (xhigh).**
+  What it needs from a model: judgement nothing will check, and restraint.
+
+  Nothing downstream checks a decision record: a weak one doesn't fail a test, it
+  quietly misdirects every spec written after it. The step also asks for
+  self-restraint — hold three or four genuinely different options at their
+  strongest, and recommend none of them before the criteria are agreed — which is
+  what a smaller model drops first, leaving one idea at three sizes. It costs an
+  interview and one document, so there is little to save here and a lot to lose;
+  where the choice is expensive to reverse, the most capable model's extra
+  reasoning is worth the price on that few thousand tokens.
+</details>
 
 #### Spike
 
@@ -402,43 +393,37 @@ stay frozen — evidence may change which option wins, not what the options are
 judged on — and the same record is rewritten in place as `accepted`. An
 `accepted` record is never revised: reopening it is a new run and a new record.
 
-The report is a working document too — [gitignore it](#the-craftstep-folder),
-or delete it once the design or spec it fed is written. What has to last is
-carried into the decision record, which never links back to the report.
+What has to last from the report is carried into the decision record, which
+never links back to it.
 
-**What it needs from a model: speed, and honesty about the result.** The code
-is disposable, so quality buys nothing; what matters is stopping at the answer
-and reporting *inconclusive* when that is what it is.
-**Recommended: Sonnet, or Opus (medium).**
+<details>
+  <summary>Recommended model: Sonnet, or Opus (medium)</summary>
+
+  What it needs from a model: speed, and honesty about the result.
+
+  The code is disposable, so quality buys nothing; what matters is stopping at
+  the answer and reporting *inconclusive* when that is what it is.
+</details>
 
 ## Project facts
 
 Skills need a handful of repo-specific facts that they would otherwise have
-to guess at or ask you about. Two files supply them: the repo's own
-`CLAUDE.md`, and `.claude/project.md`.
+to guess at or ask you about. For any one fact, a skill takes the first of
+three sources that settles it: the repo's own `CLAUDE.md`, then
+`.claude/project.md`, then inference from the repo itself — and it says which
+facts were inferred.
 
 Put a fact in `CLAUDE.md` when every session should have it in context anyway;
 put it in `.claude/project.md` when only the skill that asks for it needs it — that
 file is read on demand, so facts parked there cost no context in sessions where no
 skill runs.
 
-For any one fact, a skill takes the first of three sources that settles it,
-in this order: the repo's own `CLAUDE.md`, then `.claude/project.md`, then
-inference from the repo itself.
-
 ### project.md
 
-Facts you don't keep in `CLAUDE.md` live in one shared file per repo:
-`.claude/project.md`. Every skill reads from this file, so the facts stay in
-one place as the repo evolves. It exists specifically to resolve ambiguity the
-repo doesn't settle, so where it contradicts what a skill would otherwise infer
-from the code, the file wins.
-
 The schema is organized into sections, each covering one category of
-repo-specific fact. **Skip any section whose content your `CLAUDE.md` already
-describes** — skills look there first, and a second copy is one more thing to
-keep current. Any section, or the file itself, may be absent; skills fall
-back to inferring from the repo and say which facts were inferred:
+repo-specific fact. Any section, or the file itself, may be absent. **Skip any
+section whose content your `CLAUDE.md` already describes** — a second copy is
+one more thing to keep current.
 
 ````markdown
 
@@ -507,7 +492,7 @@ npm run build    # build
 ````
 
 ## Alternative frameworks
-craftstep is one of several attempts to bring discipline to AI-assisted development, but it's deliberately narrower than most: it supplies expertise for individual steps you invoke, not a methodology that runs your process for you. The first two below are the closest in practice.
+craftstep is one of several attempts to bring discipline to AI-assisted development, but it's deliberately narrower than most: it supplies expertise for individual steps you invoke, not a methodology that runs your process for you.
 
 [mattpocock-skills](https://github.com/mattpocock/skills) starts from the same complaint — frameworks that own the process take away your control — and answers it with small, composable skills: get grilled about a plan, turn it into a spec, split that into tracer-bullet tickets, implement, review the diff against your standards and the spec. It carries a discipline of its own: implementation drives red-green-refactor TDD at agreed seams, a `GLOSSARY.md` and ADRs keep one domain language, and specs and tickets go to your issue tracker — GitHub, GitLab or a local folder. You type the skills that orchestrate; the ones that hold the discipline, TDD and code review among them, the agent can also reach for on its own.
 
@@ -517,27 +502,15 @@ craftstep is one of several attempts to bring discipline to AI-assisted developm
 
 > craftstep keeps a record of *why* — the decision records — but not of *what*: its spec serves one change, and once that change is in, the code is the source of truth and the file is yours to delete. There is no CLI or folder convention to adopt, and the weight sits on the steps around the spec rather than on its format — an interview that pushes back before it's written, a gate and proven acceptance criteria after implementation, and reviews from a session that never saw the code being written.
 
-[feature-dev](https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev), Anthropic's own plugin, covers the same lifecycle with no methodology attached. It is one command, though — `/feature-dev` runs discovery, codebase exploration, architecture, implementation and review as seven phases of a single session, fanning out to explorer, architect and reviewer subagents, and holding the plan and the findings in that session's context.
+Further afield:
 
-> craftstep splits the same lifecycle into skills you invoke one at a time, and each writes its output to disk: a decision record, a spec you read before anything is implemented, a checklist of review findings. Nothing has to survive between steps in a context window, and the reviewer never remembers writing the code.
-
-[Superpowers](https://github.com/obra/superpowers)' skills fire automatically the moment the agent notices you're building something, and they carry a specific methodology with them: a design doc gets approved before any plan exists, and implementation is strict TDD (red-green-refactor; code written before its test gets deleted).
-
-> craftstep never triggers itself and isn't bound to a methodology: It only acts on the one step you called it for, and doesn't require a design doc or test-first discipline to use it.
-
-[GSD Core](https://github.com/open-gsd/gsd-core) is a methodology with its own execution model: a phase loop it drives across sessions, coordinating work over parallel subagents and carrying project state forward itself.
-
-> craftstep skills carry no state between invocations: each does its one step, leaves its output on disk and hands control straight back — there's nothing for it to resume, because it isn't running your process, you are. `implement` does run a loop — dispatch, gate, at most two fix rounds — but it's one skill deep and ends when that skill does, and every seam it crosses is a file you could have started from instead.
-
-[gstack](https://github.com/garrytan/gstack) models an entire organization around that lifecycle — CEO, engineering manager, designer, security officer, release engineer — each a command with its own gate.
-
-> craftstep's step list is bounded by the Software Development Life Cycle itself: designing a solution, writing a spec, implementing it, reviewing the result. It doesn't stand in for roles, only for the steps a solo engineer already owns.
+- [feature-dev](https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev), Anthropic's own plugin, covers the same lifecycle as one command: seven phases in a single session, with the plan and the findings held in its context. craftstep splits it into steps you invoke one at a time, each handing over through a file.
+- [Superpowers](https://github.com/obra/superpowers)' skills fire automatically and carry a methodology: an approved design doc before any plan, then strict TDD. craftstep never triggers itself and requires neither.
+- [GSD Core](https://github.com/open-gsd/gsd-core) drives a phase loop of its own across sessions and parallel subagents, carrying project state forward. craftstep skills carry no state between invocations.
+- [gstack](https://github.com/garrytan/gstack) models an entire organization — CEO, engineering manager, designer, security officer, release engineer — each a command with its own gate. craftstep stands in for the steps a solo engineer already owns, not for roles.
 
 ## Compatibility
 
-Skills in this repo use the `argument-hint` frontmatter field to document
-expected arguments for their `/craftstep:<name>` invocations. `argument-hint`
-is a Claude Code extension, not part of the portable Agent Skills spec. This
-means these skills are Claude Code-only: packaging or uploading them anywhere
-else that validates against the spec (claude.ai, the Skills API) fails with
-an unexpected-key error rather than silently ignoring the field.
+The skills are Claude Code-only: they use the `argument-hint` frontmatter
+field, a Claude Code extension that validators of the portable Agent Skills
+spec (claude.ai, the Skills API) reject with an unexpected-key error.
