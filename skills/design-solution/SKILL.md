@@ -2,7 +2,7 @@
 name: design-solution
 description: Design a solution before anything gets planned — interview me, weigh genuinely different options against criteria we agree, then recommend one and write the decision record. Never writes a spec or code.
 argument-hint: [the problem this run settles; blank asks]
-allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(mkdir:*), Write, AskUserQuestion
+allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(mkdir:*), Write, AskUserQuestion, Agent(Explore)
 disable-model-invocation: true
 user-invocable: true
 ---
@@ -62,7 +62,14 @@ applies:
   Dockerfiles, CI workflows, IaC, `.env.example`. They bound which options exist at all.
 - Test coverage of the affected area, per `tests`.
 - Shared units under `reuse` an option could build on.
-- `git log` over the affected paths: prior attempts at this problem, and how much the area churns.
+- `git log --oneline -n 30 -- <paths>` over the affected paths: prior attempts at this problem,
+  and how much the area churns. Open a commit only when its subject says it bears on the problem.
+
+**Locate before you read.** Grep and Glob first; read what they land on, by ranged read where a
+file is long. Where finding the area would take a sweep across many files or directories, hand
+the search to one `Explore` subagent: give it the question and ask for paths, symbols and line
+ranges back, not file contents. Then read what it located yourself — a subagent's summary is a
+pointer, not something to report as observed.
 
 **Checkpoint 1.** Report what you learned in one short block, splitting **observed** from
 **inferred**, and name in one line the decision this run settles and what it leaves to another run.
