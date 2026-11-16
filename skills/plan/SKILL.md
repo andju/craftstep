@@ -1,7 +1,7 @@
 ---
 name: plan
 description: Plan a new feature — interview me, push back on what won't work, then write an implementation-ready spec. Writes the spec and stops; never implements.
-argument-hint: [short description of the feature, or next for the first backlog entry]
+argument-hint: "short description of the feature, or next for the first backlog entry"
 allowed-tools: Read, Grep, Glob, AskUserQuestion, Write, Agent(Explore)
 disable-model-invocation: true
 user-invocable: true

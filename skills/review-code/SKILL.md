@@ -1,7 +1,7 @@
 ---
 name: review-code
 description: Review a scope I name — uncommitted changes, a folder, a branch — and write the findings as one checklist document into the repo root, for /craftstep:fix to work through. Never fixes what it finds and excludes tests.
-argument-hint: [what to review — e.g. uncommitted changes, src/api, since main; blank asks]
+argument-hint: "what to review — e.g. uncommitted changes, src/api, since main; blank asks"
 allowed-tools: Read, Grep, Glob, Bash(git:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true

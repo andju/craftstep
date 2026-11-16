@@ -1,7 +1,7 @@
 ---
 name: implement
 description: Implement an agreed spec — one work item at a time, verifying each, stopping when the codebase contradicts the plan.
-argument-hint: [optional — which work items; blank implements all of it]
+argument-hint: "optional — which work items; blank implements all of it"
 allowed-tools: Read, Grep, Glob, Bash, AskUserQuestion, Agent(spec-implementer), SendMessage
 disable-model-invocation: true
 user-invocable: true

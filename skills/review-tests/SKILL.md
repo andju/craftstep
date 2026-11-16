@@ -1,7 +1,7 @@
 ---
 name: review-tests
 description: Audit the tests for a scope I name and write the findings as one checklist document into the repo root, for /craftstep:fix to work through. Never writes or repairs a test itself.
-argument-hint: [what to review — e.g. the whole suite, tests/api, the auth flow, since main; blank asks]
+argument-hint: "what to review — e.g. the whole suite, tests/api, the auth flow, since main; blank asks"
 allowed-tools: Read, Grep, Glob, Bash(git:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true

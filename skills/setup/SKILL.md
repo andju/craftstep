@@ -1,7 +1,7 @@
 ---
 name: setup
 description: Set up `.claude/project.md` for this repo — work out each section from the repo, show the evidence, and write only the sections I accept. Never edits CLAUDE.md and never writes code.
-argument-hint: [optional — which sections to (re)do, e.g. commands tests; blank does all seven]
+argument-hint: "optional — which sections to (re)do, e.g. commands tests; blank does all seven"
 allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(mkdir:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
 user-invocable: true
