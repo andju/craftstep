@@ -28,12 +28,12 @@ Resolve each fact independently; the first source that settles it wins:
 
 What each fact is, and how to infer it from the repo:
 
-- **plans** — the file the spec lives in. Default to `SPEC.md` at the repo root.
+- **plans** — the file the spec lives in. Default to `.craftstep/spec.md`.
 - **after wrap-up** — what happens to the spec once the feature is closed out: `delete`, `leave`,
   or `move to <folder>`. In `.claude/project.md` it is the `After wrap-up:` line of the `plans`
   section. Default to `delete`; don't infer anything else from the repo.
-- **backlog** — the single file deferred work is parked in. Default to `BACKLOG.md` at the repo
-  root. Never adopt a TODO or roadmap file in another format.
+- **backlog** — the single file deferred work is parked in. Default to
+  `.craftstep/backlog.md`. Never adopt a TODO or roadmap file in another format.
 
 List the three facts in one short block, each with the source that settled it.
 

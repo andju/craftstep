@@ -27,9 +27,9 @@ settles it:
 
 What each fact is, and how to infer it from the repo:
 
-- **plans** — the file the spec gets written to. Default to `SPEC.md` at the repo root.
+- **plans** — the file the spec gets written to. Default to `.craftstep/spec.md`.
 - **backlog** — the file deferred slices are parked in. Read only when I ask for an entry;
-  never written here. Default to `BACKLOG.md` at the repo root.
+  never written here. Default to `.craftstep/backlog.md`.
 - **tests** — the tiers that exist here and what belongs in each. Infer by globbing for
   test locations and per-language test file patterns, reading one or two existing tests
   from each tier, and checking the CI config for how they're run.

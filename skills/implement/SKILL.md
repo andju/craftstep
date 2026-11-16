@@ -35,7 +35,7 @@ Then resolve each fact independently, taking the first source that settles it:
 
 What each fact does here, who uses it, and how to infer it from the repo:
 
-- **plans** — the file the spec lives in. Default to `SPEC.md` at the repo root.
+- **plans** — the file the spec lives in. Default to `.craftstep/spec.md`.
 - **commands** — each test tier plus the project's own gate: lint, types, build. **The gate
   is yours, at Step 2.** The spec names an exact command per work item and per test, so the
   tier commands go down only as a fallback for where it failed to. Infer from the package

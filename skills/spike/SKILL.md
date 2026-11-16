@@ -10,7 +10,7 @@ user-invocable: true
 We are answering a question, not building a feature (if that's empty, ask what the question is
 before anything else): $ARGUMENTS
 
-**This skill writes one file in my repo: the report, `spike-<slug>.md` at the repo root.** Everything
+**This skill writes one file in my repo: the report, `.craftstep/spike-<slug>.md`.** Everything
 else it writes lands in the spike's worktree. It never edits a decision record, a spec,
 `.claude/project.md` or CLAUDE.md, and never merges, cherry-picks or copies spike code back. If the
 run turns up a fact worth recording, propose it once you are done and let me apply it.
@@ -69,7 +69,7 @@ size, the machine, the number of runs. One run is an anecdote; say so if that is
 
 ## Step 5 — Write the report
 
-`spike-<slug>.md` at the root of my repo — the checkout this session started in, not the spike's
+`.craftstep/spike-<slug>.md` in my repo — the checkout this session started in, not the spike's
 worktree. If a file of that name is already there, say so and ask before overwriting it.
 
 The report is a working document, not a record: it lasts until the design or spec it feeds is

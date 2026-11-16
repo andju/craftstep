@@ -17,8 +17,9 @@ you invoke when you hit that step, not a one-size-fits-all agent.
 | An open question blocks a decision | `/craftstep:spike <question>` | a spike report, `spike-<slug>.md` |
 
 Every step hands over through a file, not a context window, so each one can
-start in a fresh session. [How it works](#how-it-works) covers each
-step and what it needs from a model.
+start in a fresh session. Those files are grouped in one folder, `.craftstep/`
+at the repo root — all but the decision records, which belong with your docs.
+[How it works](#how-it-works) covers each step and what it needs from a model.
 
 The goal is to keep the developer in control of the process, with room to
 course-correct early rather than after a large diff has already landed.
@@ -78,6 +79,40 @@ the sections you already have untouched.
 and writes one short file — every value passes your acceptance before it lands, so
 a wrong guess costs a keystroke. **Recommended: Haiku.**
 
+### The `.craftstep/` folder
+
+The skills write their working files into `.craftstep/` at the repo root:
+
+| File | Written by | Lifetime |
+|---|---|---|
+| `spec.md` | `/craftstep:plan` | one feature — until wrap-up |
+| `backlog.md` | `/craftstep:wrap-up` | across features — until it's empty |
+| `code-findings.md`, `test-findings.md` | the reviews | until the findings are worked off |
+| `bug-findings.md` | `/craftstep:diagnose` | until the bugs are fixed |
+| `spike-<slug>.md` | `/craftstep:spike` | until the design or spec it fed is written |
+
+The spec and the backlog can live elsewhere — see [`plans` and `backlog`](#projectmd).
+Decision records are never written here: they go under `decisions`, with your docs.
+
+What gets committed is your call. A reasonable start is a `.craftstep/.gitignore`
+that ignores everything but the backlog — the one file meant to last — and itself:
+
+```gitignore
+*
+!.gitignore
+!backlog.md
+```
+
+Remove a line, or the whole file, to share more — committed findings let a
+teammate run `/craftstep:fix` on your review.
+
+**The catch: ignored files exist only in the checkout that wrote them.** A fresh
+clone, another machine or a second git worktree doesn't have them, so a spec
+written in one worktree isn't there for `/craftstep:implement` in another, and
+the same goes for findings and `/craftstep:fix`. If you split a feature across
+worktrees or machines, commit the files you hand over (on a feature branch,
+they stay off `main`), or copy them across.
+
 ## How it works
 
 The skills are invoked, never triggered, so how much process a change gets is
@@ -131,12 +166,12 @@ review your comments. If you are using Visual Studio Code, I recommend the exten
 [Markdown Pro](https://marketplace.visualstudio.com/items?itemName=AmartyaKhan.markdown-pro-commenter)
 to add comments.
 
-The spec is a working document — keep it on the feature branch, or gitignore
-it. What happens to the file, once the feature is implemented, is your call:
-delete it, leave it, or move it to an archive folder —
-[`/craftstep:wrap-up`](#wrap-up) asks, and acts only on your answer. It
-recommends deleting unless `After wrap-up:` under [`plans`](#projectmd) records
-another choice for the repo.
+The spec is a working document — keep it on the feature branch, or
+[gitignore it](#the-craftstep-folder). What happens to the file, once the
+feature is implemented, is your call: delete it, leave it, or move it to an
+archive folder — [`/craftstep:wrap-up`](#wrap-up) asks, and acts only on your
+answer. It recommends deleting unless `After wrap-up:` under
+[`plans`](#projectmd) records another choice for the repo.
 
 Scope cut during planning isn't lost: the spec lists each slice it leaves out
 under **Deferred**, and wrap-up moves them to the backlog for a later
@@ -187,7 +222,7 @@ different commands for code and tests:
 /craftstep:review-tests
 ```
 
-Each review writes one document into the repo root —
+Each review writes one document into `.craftstep/` —
 `code-findings.md` or `test-findings.md`: a checklist on top, then for each
 finding what's wrong, where, and which way the fix should go. Not the fix
 itself: `/craftstep:fix` decides that, one finding at a time, against the code
@@ -259,14 +294,14 @@ When the feature is done, close it out:
 It does three things, in an order that matters because the last one may delete
 the spec. First it parks what the spec deferred: every slice under the spec's
 **Deferred** heading — and any work item you decide not to finish now — becomes
-an entry in the backlog (`BACKLOG.md` unless `backlog` says otherwise), complete
-enough to plan from once the spec is gone. If the feature itself came from a
-backlog entry, that entry is removed. Then it drafts a commit message from the
-spec, in chat; it never commits. Last, it asks what to do with the spec — delete
-it, leave it, or move it to an archive folder — recommending what `plans`
-records under `After wrap-up:`, or deletion when nothing is recorded. The spec
-is the only file it will remove. Findings documents are outside its scope: it neither
-reports on them nor deletes them.
+an entry in the backlog (`.craftstep/backlog.md` unless `backlog` says otherwise),
+complete enough to plan from once the spec is gone. If the feature itself came
+from a backlog entry, that entry is removed. Then it drafts a commit message from
+the spec, in chat; it never commits. Last, it asks what to do with the spec — delete
+it, leave it, or move it to an archive folder — recommending what `plans` records
+under `After wrap-up:`, or deletion when nothing is recorded. The spec is the only
+file it will remove. Findings documents are outside its scope: it neither reports
+on them nor deletes them.
 
 To pick the next slice up, in a fresh session:
 
@@ -294,10 +329,10 @@ known tends to patch the line that throws rather than the one that is wrong.
 It pins the symptom, reproduces it with the cheapest command that shows it, and
 works back to the root cause one hypothesis at a time — stopping to ask after
 three that didn't hold. It edits no code: the result is one finding in
-`bug-findings.md`, with the reproduction, the mechanism and the direction of the
-fix, which `/craftstep:fix bug-001` then works off like any review finding. A
-cause it couldn't confirm is written at low confidence, so the fixer settles it
-with a failing test before changing anything.
+`.craftstep/bug-findings.md`, with the reproduction, the mechanism and the
+direction of the fix, which `/craftstep:fix bug-001` then works off like any
+review finding. A cause it couldn't confirm is written at low confidence, so
+the fixer settles it with a failing test before changing anything.
 
 **What it needs from a model: the discipline to check before believing.** The
 failure mode is a plausible cause accepted without a test of it.
@@ -347,7 +382,7 @@ library fast enough, does the API return what the option needs.
 It agrees the question with you — and what result means yes, no or inconclusive
 — before writing anything, then builds the least that answers it in a separate
 git worktree, so your working tree is never touched. The result is a spike
-report, `spike-<slug>.md` at the repo root: the answer, the evidence, and what
+report, `.craftstep/spike-<slug>.md`: the answer, the evidence, and what
 the spike doesn't show. The code is thrown away; anything worth keeping is
 rebuilt through `/craftstep:plan`. Point `/craftstep:design-solution` or
 `/craftstep:plan` at the report to use it.
@@ -359,7 +394,7 @@ the record in a fresh session:
 
 ```
 /craftstep:spike docs/architecture/decisions/0007-pdf-rendering.md
-/craftstep:design-solution docs/architecture/decisions/0007-pdf-rendering.md spike-pdf-render-speed.md
+/craftstep:design-solution docs/architecture/decisions/0007-pdf-rendering.md .craftstep/spike-pdf-render-speed.md
 ```
 
 The second run doesn't interview again. The criteria agreed in the first round
@@ -367,9 +402,9 @@ stay frozen — evidence may change which option wins, not what the options are
 judged on — and the same record is rewritten in place as `accepted`. An
 `accepted` record is never revised: reopening it is a new run and a new record.
 
-The report is a working document too — gitignore it, or delete it once the
-design or spec it fed is written. What has to last is carried into the decision
-record, which never links back to the report.
+The report is a working document too — [gitignore it](#the-craftstep-folder),
+or delete it once the design or spec it fed is written. What has to last is
+carried into the decision record, which never links back to the report.
 
 **What it needs from a model: speed, and honesty about the result.** The code
 is disposable, so quality buys nothing; what matters is stopping at the answer
@@ -409,29 +444,30 @@ back to inferring from the repo and say which facts were inferred:
 
 ## plans
 
-`SPEC.md`
+`docs/specs/current.md`
 
 After wrap-up: move to `docs/specs/archive/`
 
 <!-- A single file: skills work one spec at a time.
-     Defaults to `SPEC.md` at the repo root when unset.
+     Defaults to `.craftstep/spec.md` when unset.
      `After wrap-up:` is what `/craftstep:wrap-up` recommends doing with the
      spec once the feature is closed out: `delete`, `leave`, or
-     `move to <folder>`. It still asks first. Defaults to `delete` when unset. -->
+     `move to <folder>`. It still asks first. Defaults to `delete` when
+     unset. -->
 
 ## backlog
 
-`BACKLOG.md`
+`docs/backlog.md`
 
 <!-- A single file: work agreed but not yet specified. Written by
      `/craftstep:wrap-up`, read by `/craftstep:plan next`.
-     Defaults to `BACKLOG.md` at the repo root when unset. -->
+     Defaults to `.craftstep/backlog.md` when unset. -->
 
 ## decisions
 
 `docs/architecture/decisions/`
 
-<!-- Where design and decision records live.
+<!-- Where design and decision records live. Never inside `.craftstep/`.
      Defaults to `docs/architecture/decisions/` when unset. -->
 
 ## commands

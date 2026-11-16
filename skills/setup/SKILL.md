@@ -46,14 +46,16 @@ find no evidence, the proposal is the documented default (`plans`, `backlog`, `d
 "leave unset" (`commands`, `tests`, `docs`, `reuse`) — never a plausible-looking guess.
 **Don't run any command you find**, and don't create anything to make a path exist.
 
-- **plans** — the single file specs get written to. Look for an existing `SPEC.md`, a specs
-  folder, or a spec path named in CLAUDE.md or `.gitignore`. Default `SPEC.md` at the root.
+- **plans** — the single file specs get written to. Look for an existing `SPEC.md` at the
+  root, a specs folder, or a spec path named in CLAUDE.md or `.gitignore`. Default
+  `.craftstep/spec.md`.
   The section holds one more optional fact, `After wrap-up:` — what `/craftstep:wrap-up` does with
   the spec once the feature is closed out: `delete`, `leave`, or `move to <folder>`. Propose
   `move to <folder>` only where the repo already keeps finished specs in one; otherwise the
   default, `delete`, stands and the line is omitted.
 - **backlog** — the single file deferred work is parked in: written by `/craftstep:wrap-up`, read
-  by `/craftstep:plan`. Look for an existing `BACKLOG.md`. Default `BACKLOG.md` at the root.
+  by `/craftstep:plan`. Look for an existing `BACKLOG.md` at the root. Default
+  `.craftstep/backlog.md`.
 - **decisions** — where design and decision records live. Glob for `adr`, `decisions`,
   `rfc`, `docs/architecture`. Default `docs/architecture/decisions/`.
 - **commands** — how to run tests, lint, build, typecheck. Take them from the package manifest

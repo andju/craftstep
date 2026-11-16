@@ -1,6 +1,6 @@
 ---
 name: review-code
-description: Review a scope I name — uncommitted changes, a folder, a branch — and write the findings as one checklist document into the repo root, for /craftstep:fix to work through. Never fixes what it finds and excludes tests.
+description: Review a scope I name — uncommitted changes, a folder, a branch — and write the findings as one checklist document into `.craftstep/`, for /craftstep:fix to work through. Never fixes what it finds and excludes tests.
 argument-hint: "what to review — e.g. uncommitted changes, src/api, since main; blank asks"
 allowed-tools: Read, Grep, Glob, Bash(git:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
@@ -12,7 +12,7 @@ We are reviewing code. Scope for this run (blank → step 1 settles it with me):
 The findings land on disk as one document, `code-findings.md`: read by me, and worked through one
 finding at a time by `/craftstep:fix`, in a later session that has no memory of this review.
 
-**This skill writes one file: `code-findings.md` at the repo root.** It never touches other files,
+**This skill writes one file: `.craftstep/code-findings.md`.** It never touches other files,
 `.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording,
 propose it once you are done and let me apply it.
 
@@ -56,11 +56,9 @@ Turn $ARGUMENTS into an explicit file list *before* reading any of it:
   file count so the choice is grounded.
 
 Remove **test files, matched by the `tests` patterns anywhere in the tree**, fixtures, test
-factories, mocks and snapshots. Out too: generated, vendored and lockfile paths, the findings documents
-`bug-findings.md`, `code-findings.md` and `test-findings.md`, spike reports (`spike-*.md` at the repo
-root), and anything not readable as text. Print
-the set before reading it: file count, total lines, exclusions and why, and the commit or working-tree
-state under review.
+factories, mocks and snapshots. Out too: generated, vendored and lockfile paths, everything under
+`.craftstep/`, and anything not readable as text. Print the set before reading it: file count,
+total lines, exclusions and why, and the commit or working-tree state under review.
 
 **Size the set before reading it — a file count doesn't bound it.** Count the lines the pass will
 read with Grep in count mode on `^`: it gives current line counts for tracked and untracked files
@@ -77,7 +75,7 @@ introduced or broke. A file up to about 400 lines is read whole, with `git diff 
 base as the scope — to mark what changed. A larger one is read as `git diff -W`, the change with
 its enclosing functions, plus a ranged read where a hunk needs more. A new file is read whole.
 
-**The repo root holds one run at a time.** Before the read pass, check the repo root
+**`.craftstep/` holds one run at a time.** Before the read pass, check `.craftstep/` at the repo root
 (`git rev-parse --show-toplevel`) for a `code-findings.md`. If one is there, say so and wait while
 I clear it. This skill deletes nothing itself, and `test-findings.md` is none of its business.
 
@@ -127,7 +125,7 @@ checklist, and saying so is the correct outcome — never pad it.
 
 ## Step 3 — Write the findings document
 
-Write `code-findings.md` at the repo root. Number the findings `NNN`, three digits zero-padded, in
+Write `.craftstep/code-findings.md`. Number the findings `NNN`, three digits zero-padded, in
 the order fixes should be applied.
 
 One finding is one fix. Merge findings that share a root cause, repeat one mechanical change across

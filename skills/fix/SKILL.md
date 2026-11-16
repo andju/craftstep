@@ -69,8 +69,9 @@ Step 5 marks the checklist; what each state means:
   question, and stop.
 - **`Apply: together with NNN`** — one fix with NNN: check both, brief both as one, tick both.
 
-No `bug-findings.md`, `code-findings.md` or `test-findings.md` at the repo root — say so and stop. A checklist
-line with no `### NNN` section means the review didn't finish writing — say so and stop.
+The findings documents live in `.craftstep/` at the repo root. No `bug-findings.md`,
+`code-findings.md` or `test-findings.md` there — say so and stop. A checklist line
+with no `### NNN` section means the review didn't finish writing — say so and stop.
 
 ## Step 2 — Check the finding before anything changes
 

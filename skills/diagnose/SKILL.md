@@ -1,6 +1,6 @@
 ---
 name: diagnose
-description: Diagnose a bug I describe — reproduce it, find the root cause, and write it up as one finding in bug-findings.md for /craftstep:fix. Never fixes it and never edits code.
+description: Diagnose a bug I describe — reproduce it, find the root cause, and write it up as one finding in .craftstep/bug-findings.md for /craftstep:fix. Never fixes it and never edits code.
 argument-hint: "the symptom — an error, a failing test, steps to reproduce; blank asks"
 allowed-tools: Read, Grep, Glob, Bash, Write, Edit, AskUserQuestion
 disable-model-invocation: true
@@ -10,7 +10,7 @@ user-invocable: true
 We are diagnosing a bug, not fixing it (if that's empty, ask what goes wrong before anything
 else): $ARGUMENTS
 
-**This skill writes one file: `bug-findings.md`.** It never edits code, tests or config — not to
+**This skill writes one file: `.craftstep/bug-findings.md`.** It never edits code, tests or config — not to
 fix, and not to instrument: a probe is a command you run, and it leaves nothing on disk. It never
 touches `.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording, propose it
 once you are done and let me apply it.
@@ -77,7 +77,7 @@ it was never meant to be: write no finding. Step 5 reports what it is and what w
 
 ## Step 4 — Write the finding
 
-`bug-findings.md` at the repo root (`git rev-parse --show-toplevel`). The file collects bugs across
+`.craftstep/bug-findings.md`, under the repo root (`git rev-parse --show-toplevel`). The file collects bugs across
 runs, so it may already exist — **never read it whole**:
 
 - **It exists** — grep `^### ` for the highest number; this finding is the next. Add its checklist

@@ -1,6 +1,6 @@
 ---
 name: review-tests
-description: Audit the tests for a scope I name and write the findings as one checklist document into the repo root, for /craftstep:fix to work through. Never writes or repairs a test itself.
+description: Audit the tests for a scope I name and write the findings as one checklist document into `.craftstep/`, for /craftstep:fix to work through. Never writes or repairs a test itself.
 argument-hint: "what to review — e.g. the whole suite, tests/api, the auth flow, since main; blank asks"
 allowed-tools: Read, Grep, Glob, Bash(git:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
@@ -12,7 +12,7 @@ We are reviewing tests. Scope for this run (blank → step 1 settles it with me)
 The findings land on disk as one document, `test-findings.md`: read by me, and worked through one
 finding at a time by `/craftstep:fix`, in a later session that has no memory of this review.
 
-**This skill writes one file: `test-findings.md` at the repo root.** It never touches other files,
+**This skill writes one file: `.craftstep/test-findings.md`.** It never touches other files,
 `.claude/project.md` or CLAUDE.md. If the run turns up a fact worth recording,
 propose it once you are done and let me apply it.
 
@@ -62,8 +62,8 @@ from the first, missing-test findings from the second. Turn $ARGUMENTS into both
 Also in scope unless I say otherwise: runner and coverage config, the CI workflows that run tests,
 shared fixtures and factories, and the summary or totals of any coverage report already in the
 tree — never a full `lcov`, JSON or HTML report. Out: generated, vendored
-and lockfile paths, the findings documents `bug-findings.md`, `code-findings.md` and `test-findings.md`,
-spike reports (`spike-*.md` at the repo root), and anything not readable as text. Print all of it before
+and lockfile paths, everything under `.craftstep/` (specs, the backlog, findings documents, spike
+reports), and anything not readable as text. Print all of it before
 reading it — both halves, config, total lines, exclusions and why, and the commit or working-tree state
 under review.
 
@@ -87,7 +87,7 @@ is read as `git diff -W`, the change with its enclosing functions, plus a ranged
 needs more. A new file is read whole. Existing tests of the changed code that the change didn't
 touch are found by grep and read only as far as it takes to tell what they already cover.
 
-**The repo root holds one run at a time.** Before the read pass, check the repo root
+**`.craftstep/` holds one run at a time.** Before the read pass, check `.craftstep/` at the repo root
 (`git rev-parse --show-toplevel`) for a `test-findings.md`. If one is there, say so and wait while
 I clear it. This skill deletes nothing itself, and `code-findings.md` is none of its business.
 
@@ -148,7 +148,7 @@ the repo answers. If nothing is worth asking, skip this step.
 
 ## Step 4 — Write the findings document
 
-Write `test-findings.md` at the repo root. Number the findings `NNN`, three digits zero-padded, in
+Write `.craftstep/test-findings.md`. Number the findings `NNN`, three digits zero-padded, in
 the order fixes should be applied. An `approach` finding that changes a convention comes before
 the tests that would be written under it.
 
