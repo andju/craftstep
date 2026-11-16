@@ -57,7 +57,7 @@ Turn $ARGUMENTS into an explicit file list *before* reading any of it:
 
 Remove **test files, matched by the `tests` patterns anywhere in the tree**, fixtures, test
 factories, mocks and snapshots. Out too: generated, vendored and lockfile paths, the findings documents
-`code-findings.md` and `test-findings.md`, and anything not readable as text. Print
+`bug-findings.md`, `code-findings.md` and `test-findings.md`, and anything not readable as text. Print
 the set before reading it: file count, total lines, exclusions and why, and the commit or working-tree
 state under review.
 

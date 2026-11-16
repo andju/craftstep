@@ -12,6 +12,7 @@ you invoke when you hit that step, not a one-size-fits-all agent.
 | Build it, in a fresh session | `/craftstep:implement` | code gated and checked against the spec |
 | Review the result — either, both or neither | `/craftstep:review-code <scope>`<br>`/craftstep:review-tests <scope>` | a checklist of findings |
 | Fix the findings, one per run | `/craftstep:fix [finding]` | the fix, ticked off in the checklist |
+| A bug — find the cause first | `/craftstep:diagnose <symptom>` | a finding for `/craftstep:fix` |
 
 Every step hands over through a file, not a context window, so each one can
 start in a fresh session. [How it works](#how-it-works) covers each
@@ -238,6 +239,27 @@ more than the edit. Anything larger goes, as the brief, to a subagent on the
 the test first where the brief asks for one, makes the edit and runs the
 checks; the session re-runs them rather than taking its word, and allows it one
 round back. **Recommended: Opus (high) for the session.**
+
+### Bug — find the cause first
+
+Something is broken and you don't know why. A fix written before the cause is
+known tends to patch the line that throws rather than the one that is wrong.
+
+```
+/craftstep:diagnose Saving a draft twice throws "duplicate key" in orders.test.ts
+```
+
+It pins the symptom, reproduces it with the cheapest command that shows it, and
+works back to the root cause one hypothesis at a time — stopping to ask after
+three that didn't hold. It edits no code: the result is one finding in
+`bug-findings.md`, with the reproduction, the mechanism and the direction of the
+fix, which `/craftstep:fix bug-001` then works off like any review finding. A
+cause it couldn't confirm is written at low confidence, so the fixer settles it
+with a failing test before changing anything.
+
+**What it needs from a model: the discipline to check before believing.** The
+failure mode is a plausible cause accepted without a test of it.
+**Recommended: Opus (high–xhigh).**
 
 ### Complex feature — design the solution first
 
