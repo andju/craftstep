@@ -1,6 +1,6 @@
 ---
 name: wrap-up
-description: Close out a feature — move the spec's deferred slices into the backlog, draft the commit message, and delete, archive or leave the spec on my answer. Never commits, pushes or touches code.
+description: Close out a feature — move the spec's deferred slices into the backlog, delete, archive or leave the spec on my answer, and draft the commit message. Never commits, pushes or touches code.
 argument-hint: "optional — anything the commit message should mention; blank is fine"
 allowed-tools: Read, Grep, Glob, Bash(git:*), Bash(rm:*), Bash(mv:*), Bash(mkdir:*), Write, Edit, AskUserQuestion
 disable-model-invocation: true
@@ -11,7 +11,7 @@ We are closing out a feature that was planned and implemented. Notes for this ru
 empty): $ARGUMENTS
 
 **This skill writes one file: the `backlog`.** It deletes or moves one file, the spec, and only on
-my answer in step 4. It never touches code, `.claude/project.md` or CLAUDE.md, and never commits,
+my answer in step 3. It never touches code, `.claude/project.md` or CLAUDE.md, and never commits,
 pushes or opens a PR. Its scope is this feature: findings documents and any other file in the working
 tree are not its business — don't read, report on or delete them. If the run turns up a fact worth
 recording, propose it once you are done and let me apply it.
@@ -44,7 +44,8 @@ wrap up.
 
 Report which work items are marked `[x]` and which are not, in one short block. **Unfinished work
 items are a question, not a stop:** ask me once whether to go back (`/craftstep:implement`), or to
-wrap up anyway and defer what is unfinished.
+wrap up anyway and defer what is unfinished. Name the unfinished items in the question itself —
+the open dialog can hide the block above it.
 
 ## Step 2 — Park the deferred work
 
@@ -85,22 +86,12 @@ for the planning interview.
 
 Nothing deferred and no entry to remove — say so and leave the file alone.
 
-## Step 3 — Draft the commit message
+## Step 3 — Clear the spec
 
-Print it in chat, in a fenced block.
-
-- **Convention first.** Where CLAUDE.md states a commit convention, follow it. Otherwise take the
-  style from `git log --oneline -n 10`.
-- **Content** — a subject line for what the change does, then a body with the why, drawn from the
-  spec's **Feature** and **Approach**, plus what $ARGUMENTS asked for.
-- **Claim only what you saw.** The spec says what was planned, not what was proven in this session:
-  don't write "all tests pass" or "meets the acceptance criteria" unless my notes say so.
-
-## Step 4 — Clear the spec
-
-The spec is the only file this skill may delete or move. Say whether git tracks it
+The spec is the only file this skill may delete or move. Check whether git tracks it
 (`git ls-files --error-unmatch <path>`), then ask me with AskUserQuestion: **delete**, **leave**,
 or **move** — to the recorded folder if `after wrap-up` names one; otherwise I type the folder.
+Say in the question itself whether git tracks the spec.
 
 **`after wrap-up` settles which option you recommend and list first, never whether you ask.**
 Unset, that is *delete*. One case overrides it: recommend *leave* when the spec has unfinished
@@ -118,10 +109,24 @@ Act only on my answer:
 with a grep on their titles first. If git tracks it, leave the deletion or move unstaged for me to
 commit.
 
-## Step 5 — Report
+## Step 4 — Report, then the commit message
 
-In chat, under 150 words: backlog entries added, updated and removed, by title; whether the spec
-was deleted, moved or left; any work item that was neither finished nor parked; any fact
+Your final message of the run, in two parts.
+
+**The report**, under 150 words: backlog entries added, updated and removed, by title; whether the
+spec was deleted, moved or left; any work item that was neither finished nor parked; any fact
 in `.claude/project.md` or CLAUDE.md worth adding, changing or removing — one this run found
 missing, wrong or out of date. Then the next step, if the backlog holds one: `/craftstep:plan next`, in a
 fresh session.
+
+**The commit message**, in a fenced block, as the last thing in the message — outside the 150
+words. Draft it now, not earlier: text printed between tool calls, or just before a question, may
+never reach me, so this is the only place it appears and nothing follows it.
+
+- **Convention first.** Where CLAUDE.md states a commit convention, follow it. Otherwise take the
+  style from `git log --oneline -n 10`.
+- **Content** — a subject line for what the change does, then a body with the why, drawn from the
+  spec's **Feature** and **Approach** as you read them in step 1 (the spec may be gone by now), plus
+  what $ARGUMENTS asked for.
+- **Claim only what you saw.** The spec says what was planned, not what was proven in this session:
+  don't write "all tests pass" or "meets the acceptance criteria" unless my notes say so.

@@ -267,17 +267,18 @@ When the feature is done, close it out:
 /craftstep:wrap-up
 ```
 
-It does three things, in an order that matters because the last one may delete
-the spec:
+It does three things, in an order that matters: the second may delete the
+spec, and the commit message comes last so no question hides it:
 
 1. **Parks what the spec deferred.** Every slice under the spec's **Deferred**
    heading — and any work item you decide not to finish now — becomes an entry
    in the backlog, complete enough to plan from once the spec is gone. If the
    feature itself came from a backlog entry, that entry is removed.
-2. **Drafts a commit message** from the spec, in chat; it never commits.
-3. **Asks what to do with the spec** — delete it, leave it, or move it to an
+2. **Asks what to do with the spec** — delete it, leave it, or move it to an
    archive folder — recommending what `plans` records under `After wrap-up:`,
    or deletion when nothing is recorded.
+3. **Drafts a commit message** from the spec, as the last thing in its final
+   report; it never commits.
 
 The spec is the only file it will remove. Findings documents are outside its
 scope: it neither reports on them nor deletes them.
