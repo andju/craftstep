@@ -88,10 +88,16 @@ this feature or a leftover from a finished one. Read its **Feature** section and
   edits I made directly in the file. You'll rewrite it incorporating them, so ask only about
   what those changes left ambiguous, and don't re-interview on settled points. Carry its
   **Rejected alternatives** forward into the rewrite — drop an entry only if the revision
-  explicitly revives that option, and then say so under **Approach**.
+  explicitly revives that option, and then say so under **Approach**. Read the implementation
+  log too, if `/craftstep:implement` left one beside the spec (its path with `.md` replaced by
+  `.log.md`): its decisions are answers I already gave and its findings are facts about the
+  code. Fold in each one that changes what gets built, and ask about none of them again. The
+  rewrite supersedes the log, so your summary tells me to delete it before the next
+  `/craftstep:implement`.
 - **A different feature.** Name the feature it holds and confirm with me before overwriting
   it. If it has **Deferred** slices, say that overwriting loses them unless
-  `/craftstep:wrap-up` has already moved them to the backlog.
+  `/craftstep:wrap-up` has already moved them to the backlog; the same goes for the decisions in
+  an implementation log beside it.
 
 This step still ends by naming the scope: say in one line what this run specs, and what it
 leaves out.

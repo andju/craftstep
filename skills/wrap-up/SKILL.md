@@ -10,11 +10,11 @@ user-invocable: true
 We are closing out a feature that was planned and implemented. Notes for this run (may be
 empty): $ARGUMENTS
 
-**This skill writes one file: the `backlog`.** It deletes or moves one file, the spec, and only on
-my answer in step 3. It never touches code, `.claude/project.md` or CLAUDE.md, and never commits,
-pushes or opens a PR. Its scope is this feature: findings documents and any other file in the working
-tree are not its business — don't read, report on or delete them. If the run turns up a fact worth
-recording, propose it once you are done and let me apply it.
+**This skill writes one file: the `backlog`.** It deletes or moves the spec and the implementation
+log beside it, and only on my answer in step 3. It never touches code, `.claude/project.md` or
+CLAUDE.md, and never commits, pushes or opens a PR. Its scope is this feature: findings documents and
+any other file in the working tree are not its business — don't read, report on or delete them. If
+the run turns up a fact worth recording, propose it once you are done and let me apply it.
 
 ## Step 0 — Load this project's conventions
 
@@ -40,12 +40,14 @@ List the three facts in one short block, each with the source that settled it.
 ## Step 1 — Take stock
 
 Read the spec once, in full. Nothing at the `plans` path — say so and stop: there is nothing to
-wrap up.
+wrap up. Then read the implementation log `/craftstep:implement` may have left beside it — the
+spec's path with `.md` replaced by `.log.md`: the decisions I took during implementation, what the
+runs found, and in **State** why any item is still open.
 
-Report which work items are marked `[x]` and which are not, in one short block. **Unfinished work
-items are a question, not a stop:** ask me once whether to go back (`/craftstep:implement`), or to
-wrap up anyway and defer what is unfinished. Name the unfinished items in the question itself —
-the open dialog can hide the block above it.
+Report which work items are marked `[x]` and which are not, with the reason State gives for each
+open one, in one short block. **Unfinished work items are a question, not a stop:** ask me once
+whether to go back (`/craftstep:implement`), or to wrap up anyway and defer what is unfinished. Name
+the unfinished items in the question itself — the open dialog can hide the block above it.
 
 ## Step 2 — Park the deferred work
 
@@ -82,16 +84,18 @@ that `/craftstep:plan` can start from this entry alone, because the spec it came
 Carry each slice across as the spec states it; don't re-scope, merge or improve one. A slice too
 thin to plan from is completed from the rest of the spec — its **Feature**, **Approach** and
 **Rejected alternatives** — never from guesswork: what the spec doesn't say goes in as an open point
-for the planning interview.
+for the planning interview. A logged decision or finding that bears on an entry goes into it as
+settled, with its date, since the log goes with the spec.
 
 Nothing deferred and no entry to remove — say so and leave the file alone.
 
 ## Step 3 — Clear the spec
 
-The spec is the only file this skill may delete or move. Check whether git tracks it
-(`git ls-files --error-unmatch <path>`), then ask me with AskUserQuestion: **delete**, **leave**,
-or **move** — to the recorded folder if `after wrap-up` names one; otherwise I type the folder.
-Say in the question itself whether git tracks the spec.
+The spec and its log are the only files this skill may delete or move, and the log always gets the
+spec's answer. Check whether git tracks each (`git ls-files --error-unmatch <path>`), then ask me
+with AskUserQuestion: **delete**, **leave**, or **move** — to the recorded folder if
+`after wrap-up` names one; otherwise I type the folder. Say in the question itself whether git
+tracks each.
 
 **`after wrap-up` settles which option you recommend and list first, never whether you ask.**
 Unset, that is *delete*. One case overrides it: recommend *leave* when the spec has unfinished
@@ -101,12 +105,12 @@ Act only on my answer:
 
 - **Delete** — with `rm`.
 - **Move** — into the folder, as `<YYYY-MM-DD>-<feature title in kebab-case>.md`, since every spec
-  leaves the same path. Create the folder if it isn't there. Never overwrite a file already in it:
-  ask me for another name.
+  leaves the same path; the log under the same name ending `.log.md`. Create the folder if it isn't
+  there. Never overwrite a file already in it: ask me for another name.
 - **Leave** — touch nothing.
 
-**The spec is never deleted or moved before step 2's entries are in the backlog file** — check
-with a grep on their titles first. If git tracks it, leave the deletion or move unstaged for me to
+**Neither file is deleted or moved before step 2's entries are in the backlog file** — check with a
+grep on their titles first. Where git tracks one, leave the deletion or move unstaged for me to
 commit.
 
 ## Step 4 — Report, then the commit message
@@ -114,8 +118,8 @@ commit.
 Your final message of the run, in two parts.
 
 **The report**, under 150 words: backlog entries added, updated and removed, by title; whether the
-spec was deleted, moved or left; any work item that was neither finished nor parked; any fact
-in `.claude/project.md` or CLAUDE.md worth adding, changing or removing — one this run found
+spec and its log were deleted, moved or left; any work item that was neither finished nor parked;
+any fact in `.claude/project.md` or CLAUDE.md worth adding, changing or removing — one this run found
 missing, wrong or out of date. Then the next step, if the backlog holds one: `/craftstep:plan next`, in a
 fresh session.
 
@@ -127,6 +131,6 @@ never reach me, so this is the only place it appears and nothing follows it.
   style from `git log --oneline -n 10`.
 - **Content** — a subject line for what the change does, then a body with the why, drawn from the
   spec's **Feature** and **Approach** as you read them in step 1 (the spec may be gone by now), plus
-  what $ARGUMENTS asked for.
+  each logged decision that changed what was built, and what $ARGUMENTS asked for.
 - **Claim only what you saw.** The spec says what was planned, not what was proven in this session:
   don't write "all tests pass" or "meets the acceptance criteria" unless my notes say so.

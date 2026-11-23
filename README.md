@@ -9,7 +9,7 @@ you invoke when you hit that step, not a one-size-fits-all agent.
 | Settle the approach — complex features only | `/craftstep:design-solution <problem>` | a decision record |
 | Agree on what gets built | `/craftstep:plan <feature>` | a spec |
 | Read the spec, comment where it's wrong | you | a spec you agree with |
-| Build it, in a fresh session | `/craftstep:implement` | code gated and checked against the spec |
+| Build it, in a fresh session | `/craftstep:implement` | code gated and checked against the spec; a log of what you decided along the way |
 | Review the result — either, both or neither | `/craftstep:review-code <scope>`<br>`/craftstep:review-tests <scope>` | a checklist of findings |
 | Fix the findings, one per run | `/craftstep:fix [finding]` | the fix, ticked off in the checklist |
 | Close the feature out | `/craftstep:wrap-up` | deferred work in the backlog; commit message |
@@ -84,12 +84,14 @@ The skills write their working files into `.craftstep/` at the repo root:
 | File | Written by | Lifetime |
 |---|---|---|
 | `spec.md` | `/craftstep:plan` | one feature — until wrap-up |
+| `spec.log.md` | `/craftstep:implement` | goes wherever the spec goes |
 | `backlog.md` | `/craftstep:wrap-up` | across features — until it's empty |
 | `code-findings.md`, `test-findings.md` | the reviews | until the findings are worked off |
 | `bug-findings.md` | `/craftstep:diagnose` | until the bugs are fixed |
 | `spike-<slug>.md` | `/craftstep:spike` | until the design or spec it fed is written |
 
-The spec and the backlog can live elsewhere — see [`plans` and `backlog`](#projectmd).
+The spec and the backlog can live elsewhere — see [`plans` and `backlog`](#projectmd);
+the log follows the spec.
 Decision records are never written here: they go under `decisions`, with your docs.
 
 What gets committed is your call. A reasonable start is a `.craftstep/.gitignore`
@@ -177,6 +179,16 @@ Start the implementation in a fresh session:
 
 It will implement the spec, working one item at a time and verify each before
 starting the next. Where the codebase contradicts the spec it stops and asks.
+
+Your answers outlast the session. Each decision you take during a run — the
+answer to a contradiction it stopped on, a constraint you add, an approval —
+goes into an implementation log beside the spec (`.craftstep/spec.log.md` by
+default) the moment you give it, along with what the run found the spec got
+wrong and, when it stops short, which items are still open and why. The next
+run reads the log first and asks nothing it records again; the spec itself
+stays as you agreed it. A finding that outlasts the spec, such as the syntax
+for running a single test, the report proposes for your `CLAUDE.md` or
+`project.md`.
 
 <details>
   <summary>Recommended model: Opus (high–xhigh) for the session</summary>
@@ -273,15 +285,16 @@ spec, and the commit message comes last so no question hides it:
 1. **Parks what the spec deferred.** Every slice under the spec's **Deferred**
    heading — and any work item you decide not to finish now — becomes an entry
    in the backlog, complete enough to plan from once the spec is gone. If the
-   feature itself came from a backlog entry, that entry is removed.
-2. **Asks what to do with the spec** — delete it, leave it, or move it to an
-   archive folder — recommending what `plans` records under `After wrap-up:`,
-   or deletion when nothing is recorded.
-3. **Drafts a commit message** from the spec, as the last thing in its final
-   report; it never commits.
+   feature itself came from a backlog entry, that entry is removed. Decisions
+   from the implementation log go into the entries they bear on.
+2. **Asks what to do with the spec** and its log — delete them, leave them, or
+   move them to an archive folder — recommending what `plans` records under
+   `After wrap-up:`, or deletion when nothing is recorded.
+3. **Drafts a commit message** from the spec and the decisions in its log, as
+   the last thing in its final report; it never commits.
 
-The spec is the only file it will remove. Findings documents are outside its
-scope: it neither reports on them nor deletes them.
+The spec and its log are the only files it will remove. Findings documents are
+outside its scope: it neither reports on them nor deletes them.
 
 <details>
   <summary>Recommended model: Sonnet</summary>
@@ -439,7 +452,8 @@ After wrap-up: move to `docs/specs/archive/`
      `After wrap-up:` is what `/craftstep:wrap-up` recommends doing with the
      spec once the feature is closed out: `delete`, `leave`, or
      `move to <folder>`. It still asks first. Defaults to `delete` when
-     unset. -->
+     unset. `/craftstep:implement` keeps its log beside the spec, the path
+     with `.md` replaced by `.log.md`; wrap-up treats it the same way. -->
 
 ## backlog
 
@@ -507,7 +521,7 @@ Further afield:
 
 - [feature-dev](https://github.com/anthropics/claude-code/tree/main/plugins/feature-dev), Anthropic's own plugin, covers the same lifecycle as one command: seven phases in a single session, with the plan and the findings held in its context. craftstep splits it into steps you invoke one at a time, each handing over through a file.
 - [Superpowers](https://github.com/obra/superpowers)' skills fire automatically and carry a methodology: an approved design doc before any plan, then strict TDD. craftstep never triggers itself and requires neither.
-- [GSD Core](https://github.com/open-gsd/gsd-core) drives a phase loop of its own across sessions and parallel subagents, carrying project state forward. craftstep skills carry no state between invocations.
+- [GSD Core](https://github.com/open-gsd/gsd-core) drives a phase loop of its own across sessions and parallel subagents, carrying project state forward. craftstep skills keep no state of their own between invocations: what one run leaves for the next — a ticked work item, a logged decision — is a file you can read and edit.
 - [gstack](https://github.com/garrytan/gstack) models an entire organization — CEO, engineering manager, designer, security officer, release engineer — each a command with its own gate. craftstep stands in for the steps a solo engineer already owns, not for roles.
 
 ## Compatibility
